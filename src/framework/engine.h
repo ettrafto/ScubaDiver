@@ -22,9 +22,10 @@ class Engine {
     private:
         /// @brief The actual GLFW window.
         GLFWwindow* window{};
+        color brown = color{0.8f, 0.4f, 0.0f, 1.0f};
 
         /// @brief The width and height of the window.
-        const unsigned int width = 800, height = 600; // Window dimensions
+        const unsigned int width = 500, height = 500; // Window dimensions
 
         /// @brief Keyboard state (True if pressed, false if not pressed).
         /// @details Index this array with GLFW_KEY_{key} to get the state of a key.
@@ -39,8 +40,7 @@ class Engine {
         unique_ptr<FontRenderer> fontRenderer;
 
         // Shapes
-        unique_ptr<Shape> spawnButton;
-        vector<unique_ptr<Shape>> confetti;
+        vector <unique_ptr<Rect>> squares;
 
         // Shaders
         Shader shapeShader;

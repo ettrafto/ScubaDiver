@@ -66,7 +66,16 @@ void Engine::initShaders() {
 }
 
 void Engine::initShapes() {
-    // red spawn button centered in the top left corner
+    // squares
+    int numSquares = 25;
+    vec2 squareSize = vec2{75,75};
+    for (int y = 25; y < 501; y+= 100){
+        for (int x = 25; x < 501; x+= 100){
+            squares.push_back(make_unique<Rect>(shapeShader, vec2{x, y}, squareSize, brown));
+        }
+    }
+
+
 
 }
 
@@ -95,12 +104,9 @@ void Engine::processInput() {
 
     // Mouse position is inverted because the origin of the window is in the top left corner
     MouseY = height - MouseY; // Invert y-axis of mouse position
-    bool buttonOverlapsMouse = spawnButton->isOverlapping(vec2(MouseX, MouseY));
     bool mousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
 
     // TODO: When in play screen, if the user hovers the square then add an outline to the square
-    if(buttonOverlapsMouse == true)
-        spawnButton->setColor(color{0, 1, 1, 1});
     // Hint: look at the color objects declared at the top of this file
 
     // TODO: When in play screen, if the user clicks a lit square, change it to unlit\
@@ -112,8 +118,6 @@ void Engine::processInput() {
 
     // Hint: the button was released if it was pressed last frame and is not pressed now
     // TODO: Make sure the square is not outlined when the user is not hovering.
-    if(buttonOverlapsMouse == false)
-        spawnButton->setColor(color{1, 0, 0, 1});
 
     // Save mousePressed for next frame
     mousePressedLastFrame = mousePressed;
@@ -151,20 +155,14 @@ void Engine::render() {
             // TODO: call setUniforms and draw on the spawnButton and all of the confetti pieces
             //  Hint: make sure you draw the spawn button after the confetti to make it appear on top
             // Render font on top of spawn button
-            for (const unique_ptr<Shape>& c : confetti){
-                c-> setUniforms();
-                c->draw();
+            for (const unique_ptr<Rect>& s : squares){
+                s-> setUniforms();
+                s->draw();
             }
-            spawnButton->setUniforms();
-            spawnButton->draw();
-
-
-            fontRenderer->renderText("Spawn", spawnButton->getPos().x - 30, spawnButton->getPos().y - 5, 0.5, vec3{1, 1, 1});
             break;
         }
         case over: {
             string message = "You win!";
-            fontRenderer->renderText(message, spawnButton->getPos().x - 30, spawnButton->getPos().y - 5, 0.5, vec3{1, 1, 1});
             break;
         }
     }
@@ -172,14 +170,6 @@ void Engine::render() {
     glfwSwapBuffers(window);
 }
 
-void Engine::spawnConfetti() {
-    vec2 pos = {rand() % (int)width, rand() % (int)height};
-    // TODO: Make each piece of confetti a different size, getting bigger with each spawn.
-    //  The smallest should be a square of size 1 and the biggest should be a square of size 100
-    vec2 size = {(rand() % 100) + 1, (rand() % 100) + 1}; // placeholder
-    color color = {float(rand() % 10 / 10.0), float(rand() % 10 / 10.0), float(rand() % 10 / 10.0), 1.0f};
-    confetti.push_back(make_unique<Rect>(shapeShader, pos, size, color));
-}
 
 bool Engine::shouldClose() {
     return glfwWindowShouldClose(window);
