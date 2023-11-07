@@ -39,8 +39,7 @@ class Engine {
         unique_ptr<FontRenderer> fontRenderer;
 
         // Shapes
-        unique_ptr<Shape> spawnButton;
-        vector<unique_ptr<Shape>> confetti;
+        unique_ptr<Shape> square;
 
         // Shaders
         Shader shapeShader;
@@ -67,9 +66,6 @@ class Engine {
 
         /// @brief Initializes the shapes to be rendered.
         void initShapes();
-
-        /// @brief Pushes back a new colored rectangle to the confetti vector.
-        void spawnConfetti();
 
         /// @brief Processes input from the user.
         /// @details (e.g. keyboard input, mouse input, etc.)

@@ -147,12 +147,6 @@ void Engine::render() {
         case play: {
             // TODO: call setUniforms and draw on the spawnButton and all of the confetti pieces
             //  Hint: make sure you draw the spawn button after the confetti to make it appear on top
-            for (auto &row : grid) {
-                for (auto &square : row) {
-                    square.renderOutline(shapeShader); // Render the outline first
-                    square.render(shapeShader); // Render the square on top of the outline
-                }
-            }
             break;
         }
         case over: {
@@ -168,3 +162,4 @@ void Engine::render() {
 bool Engine::shouldClose() {
     return glfwWindowShouldClose(window);
 }
+
