@@ -106,6 +106,10 @@ void Engine::processInput() {
     MouseY = height - MouseY; // Invert y-axis of mouse position
     bool mousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
 
+    // TODO: random num generator
+    // TODO: set beginning play screen
+
+
     // TODO: When in play screen, if the user hovers the square then add an outline to the square
     // Hint: look at the color objects declared at the top of this file
 
@@ -122,6 +126,11 @@ void Engine::processInput() {
     //creates array of states and valid counter
     bool RectStatus[25];
     int valid = 0;
+
+
+
+
+
 
     //iterates through status checking if all lights are off
     for(bool status:RectStatus){
