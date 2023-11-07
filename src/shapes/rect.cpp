@@ -1,5 +1,4 @@
 #include "rect.h"
-#include "circle.h"
 
 Rect::Rect(Shader & shader, vec2 pos, vec2 size, struct color color)
     : Shape(shader, pos, size, color) {
@@ -23,7 +22,7 @@ Rect::~Rect() {
 
 void Rect::draw() const {
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, 8, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
 
