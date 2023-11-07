@@ -46,6 +46,8 @@ unsigned int Engine::initWindow(bool debug) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glfwSwapInterval(1);
 
+
+    screen = start;
     return 0;
 }
 
@@ -119,6 +121,24 @@ void Engine::processInput() {
     // Hint: the button was released if it was pressed last frame and is not pressed now
     // TODO: Make sure the square is not outlined when the user is not hovering.
 
+    //creates array of states and valid counter
+    bool RectStatus[25];
+    int valid = 0;
+
+    //iterates through status checking if all lights are off
+    for(bool status:RectStatus){
+        if(!status){
+            valid += valid;
+        }
+        if (valid = 25){
+            screen = over;
+        }
+    }
+
+
+
+
+    }
     // Save mousePressed for next frame
     mousePressedLastFrame = mousePressed;
 
@@ -132,6 +152,7 @@ void Engine::update() {
 
     // TODO: End the game when there are no more light up squares
     // If the size of the confetti vector reaches 100, change screen to over
+
 
 }
 
