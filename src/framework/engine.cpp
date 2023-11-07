@@ -31,7 +31,7 @@ unsigned int Engine::initWindow(bool debug) {
 #endif
     glfwWindowHint(GLFW_RESIZABLE, false);
 
-    window = glfwCreateWindow(width, height, "engine", nullptr, nullptr);
+    window = glfwCreateWindow(width, height, "Lights Out!", nullptr, nullptr);
     glfwMakeContextCurrent(window);
 
     // glad: load all OpenGL function pointers
@@ -67,7 +67,7 @@ void Engine::initShaders() {
 
 void Engine::initShapes() {
     // red spawn button centered in the top left corner
-    spawnButton = make_unique<Rect>(shapeShader, vec2{width/2,height/2}, vec2{100, 50}, color{1, 0, 0, 1});
+
 }
 
 void Engine::processInput() {
