@@ -79,3 +79,24 @@ bool Rect::isOverlapping(const Shape &other) const {
     }
     return false;
 }
+
+// Implementation of isMouseOver method
+bool Rect::isMouseOver(double mouseX, double mouseY) const {
+    // Adjust for the position and size of the rectangle
+    return mouseX >= getLeft() && mouseX <= getRight() &&
+           mouseY >= getBottom() && mouseY <= getTop();
+}
+
+void Rect::renderOutline(Shader &shader) const {
+    // Set the shader and color for the outline
+    shader.use();
+    shader.setVector4f("color", glm::vec4(1.0f, 0.0f, 0.0f, 0.75f));
+
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, 8, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+}
+
+void Rect::setHover(bool hover) {
+    this->hovered = hover;
+}

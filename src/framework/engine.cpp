@@ -74,14 +74,16 @@ void Engine::initShapes() {
             squares.push_back(make_unique<Rect>(shapeShader, vec2{x, y}, squareSize, brown));
         }
     }
-
-
-
 }
 
 void Engine::processInput() {
     glfwPollEvents();
 
+    if (screen == start){
+        if(keys[GLFW_KEY_S]){
+            screen = play;
+        }
+    }
     // Set keys to true if pressed, false if released
     for (int key = 0; key < 1024; ++key) {
         if (glfwGetKey(window, key) == GLFW_PRESS)
@@ -102,22 +104,31 @@ void Engine::processInput() {
     if (keys[GLFW_KEY_S])
         screen = play;
 
+    if (screen == play) {
+        // TODO: When in play screen, if the user hovers the square then add an outline to the square
+        // Check if the mouse is hovering over any of the squares
+        for (auto &s : squares) {
+            bool isHovered = s->isMouseOver(MouseX, MouseY);
+            s->setHover(isHovered); // You need to have a method to update the hover state in your Rect class
+            if (isHovered) {
+                s->renderOutline(shapeShader); // Render the outline only if the square is being hovered over
+            }
+        }
+
+        // TODO: When in play screen, if the user clicks a lit square, change it to unlit
+        // Adding so i can push it
+
+        // TODO: When in play screen, if the user clicks an unlit square, change it to lit
+
+        // TODO: When a user clicks a square, change the 4 surrounding squares to their opposite value (lit -> unlit, etc.)
+
+        // Hint: the button was released if it was pressed last frame and is not pressed now
+        // TODO: Make sure the square is not outlined when the user is not hovering.
+
+    }
     // Mouse position is inverted because the origin of the window is in the top left corner
     MouseY = height - MouseY; // Invert y-axis of mouse position
     bool mousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
-
-    // TODO: When in play screen, if the user hovers the square then add an outline to the square
-    // Hint: look at the color objects declared at the top of this file
-
-    // TODO: When in play screen, if the user clicks a lit square, change it to unlit\
-    // Adding so i can push it
-
-    // TODO: When in play screen, if the user clicks an unlit square, change it to lit
-
-    // TODO: When a user clicks a square, change the 4 surrounding squares to their opposite value (lit -> unlit, etc.)
-
-    // Hint: the button was released if it was pressed last frame and is not pressed now
-    // TODO: Make sure the square is not outlined when the user is not hovering.
 
     // Save mousePressed for next frame
     mousePressedLastFrame = mousePressed;
@@ -152,12 +163,17 @@ void Engine::render() {
             break;
         }
         case play: {
-            // TODO: call setUniforms and draw on the spawnButton and all of the confetti pieces
-            //  Hint: make sure you draw the spawn button after the confetti to make it appear on top
-            // Render font on top of spawn button
-            for (const unique_ptr<Rect>& s : squares){
-                s-> setUniforms();
-                s->draw();
+            for (auto &s : squares) {
+                // Set uniforms for the shader
+                s->setUniforms();
+
+                // Check if we should render the outline
+                if (s->isMouseOver(MouseX, MouseY)) {
+                    s->renderOutline(shapeShader); // This should render the outline
+                }
+
+                // Render the square
+                s->draw(); // This should render the square itself
             }
             break;
         }
