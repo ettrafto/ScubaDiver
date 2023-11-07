@@ -46,6 +46,8 @@ unsigned int Engine::initWindow(bool debug) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glfwSwapInterval(1);
 
+
+    screen = start;
     return 0;
 }
 
@@ -74,16 +76,12 @@ void Engine::initShapes() {
             squares.push_back(make_unique<Rect>(shapeShader, vec2{x, y}, squareSize, brown));
         }
     }
+
 }
 
 void Engine::processInput() {
     glfwPollEvents();
 
-    if (screen == start){
-        if(keys[GLFW_KEY_S]){
-            screen = play;
-        }
-    }
     // Set keys to true if pressed, false if released
     for (int key = 0; key < 1024; ++key) {
         if (glfwGetKey(window, key) == GLFW_PRESS)
@@ -130,6 +128,26 @@ void Engine::processInput() {
     MouseY = height - MouseY; // Invert y-axis of mouse position
     bool mousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
 
+    //creates array of states and valid counter
+    bool RectStatus[25];
+    int valid = 0;
+
+
+
+
+
+
+    //iterates through status checking if all lights are off
+    for(bool status:RectStatus){
+        if(!status){
+            valid += valid;
+        }
+        if (valid == 25){
+            screen = over;
+        }
+    }
+
+
     // Save mousePressed for next frame
     mousePressedLastFrame = mousePressed;
 
@@ -156,10 +174,16 @@ void Engine::render() {
     // Render differently depending on screen
     switch (screen) {
         case start: {
-            string message = "Press s to start";
+            string message = "Welcome to Lights out!";
+            string instructions = "Click each light";
+            string instructions1= "to turn them off";
+            string instructions2 = "Pres S to start!";
             // (12 * message.length()) is the offset to center text.
             // 12 pixels is the width of each character scaled by 1.
-            this->fontRenderer->renderText(message, width/2 - (12 * message.length()), height/2, 1, vec3{1, 1, 1});
+            this->fontRenderer->renderText(message, 125 , 450, 1, vec3{1, 1, 1});
+            this->fontRenderer->renderText(instructions, 125 , 340, 1, vec3{1, 1, 1});
+            this->fontRenderer->renderText(instructions1, 125 , 300, 1, vec3{1, 1, 1});
+            this->fontRenderer->renderText(instructions2, 125 , 150, 1, vec3{1, 1, 1});
             break;
         }
         case play: {
