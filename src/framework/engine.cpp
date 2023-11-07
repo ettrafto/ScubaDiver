@@ -4,16 +4,17 @@ enum state {start, play, over};
 state screen;
 
 // Colors
-color originalFill, hoverFill, pressFill;
+color originalFill, pressFill, outlineColor;
+bool isHovered;
 
 Engine::Engine() : keys() {
     this->initWindow();
     this->initShaders();
     this->initShapes();
 
-    originalFill = {1, 0, 0, 1};
-    hoverFill.vec = originalFill.vec + vec4{0.5, 0.5, 0.5, 0};
-    pressFill.vec = originalFill.vec - vec4{0.5, 0.5, 0.5, 0};
+    originalFill = {1, 1, 0, 1};
+    outlineColor = {1, 0, 0, 1};
+    pressFill = {0, 0, 0, 0.5};
 }
 
 Engine::~Engine() {}
@@ -67,7 +68,6 @@ void Engine::initShaders() {
 
 void Engine::initShapes() {
     // red spawn button centered in the top left corner
-
 }
 
 void Engine::processInput() {
@@ -93,18 +93,15 @@ void Engine::processInput() {
     if (keys[GLFW_KEY_S])
         screen = play;
 
-    // Mouse position is inverted because the origin of the window is in the top left corner
-    MouseY = height - MouseY; // Invert y-axis of mouse position
-    bool buttonOverlapsMouse = spawnButton->isOverlapping(vec2(MouseX, MouseY));
+    bool buttonOverlapsMouse = square->isOverlapping(vec2(MouseX, MouseY));
     bool mousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
 
     // TODO: When in play screen, if the user hovers the square then add an outline to the square
     if(buttonOverlapsMouse == true)
-        spawnButton->setColor(color{0, 1, 1, 1});
+        square->setColor(color{0, 1, 1, 1});
     // Hint: look at the color objects declared at the top of this file
 
-    // TODO: When in play screen, if the user clicks a lit square, change it to unlit\
-    // Adding so i can push it
+    // TODO: When in play screen, if the user clicks a lit square, change it to unlit
 
     // TODO: When in play screen, if the user clicks an unlit square, change it to lit
 
@@ -113,7 +110,7 @@ void Engine::processInput() {
     // Hint: the button was released if it was pressed last frame and is not pressed now
     // TODO: Make sure the square is not outlined when the user is not hovering.
     if(buttonOverlapsMouse == false)
-        spawnButton->setColor(color{1, 0, 0, 1});
+        square->setColor(color{1, 0, 0, 1});
 
     // Save mousePressed for next frame
     mousePressedLastFrame = mousePressed;
@@ -150,35 +147,22 @@ void Engine::render() {
         case play: {
             // TODO: call setUniforms and draw on the spawnButton and all of the confetti pieces
             //  Hint: make sure you draw the spawn button after the confetti to make it appear on top
-            // Render font on top of spawn button
-            for (const unique_ptr<Shape>& c : confetti){
-                c-> setUniforms();
-                c->draw();
+            for (auto &row : grid) {
+                for (auto &square : row) {
+                    square.renderOutline(shapeShader); // Render the outline first
+                    square.render(shapeShader); // Render the square on top of the outline
+                }
             }
-            spawnButton->setUniforms();
-            spawnButton->draw();
-
-
-            fontRenderer->renderText("Spawn", spawnButton->getPos().x - 30, spawnButton->getPos().y - 5, 0.5, vec3{1, 1, 1});
             break;
         }
         case over: {
             string message = "You win!";
-            fontRenderer->renderText(message, spawnButton->getPos().x - 30, spawnButton->getPos().y - 5, 0.5, vec3{1, 1, 1});
+            fontRenderer->renderText(message, square->getPos().x - 30, square->getPos().y - 5, 0.5, vec3{1, 1, 1});
             break;
         }
     }
 
     glfwSwapBuffers(window);
-}
-
-void Engine::spawnConfetti() {
-    vec2 pos = {rand() % (int)width, rand() % (int)height};
-    // TODO: Make each piece of confetti a different size, getting bigger with each spawn.
-    //  The smallest should be a square of size 1 and the biggest should be a square of size 100
-    vec2 size = {(rand() % 100) + 1, (rand() % 100) + 1}; // placeholder
-    color color = {float(rand() % 10 / 10.0), float(rand() % 10 / 10.0), float(rand() % 10 / 10.0), 1.0f};
-    confetti.push_back(make_unique<Rect>(shapeShader, pos, size, color));
 }
 
 bool Engine::shouldClose() {
