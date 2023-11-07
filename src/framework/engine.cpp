@@ -137,8 +137,6 @@ void Engine::processInput() {
 
 
 
-
-    }
     // Save mousePressed for next frame
     mousePressedLastFrame = mousePressed;
 
