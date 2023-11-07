@@ -4,9 +4,30 @@
 #include "glm/glm.hpp"
 #include <vector>
 #include "../framework/shader.h"
-#include "../framework/color.h"
 
 using std::vector, glm::vec2, glm::vec3, glm::vec4, glm::mat4, glm::translate, glm::scale;
+
+// Union allows students to access the color as a vec4 with color.vec or as a float with color.red, etc.
+struct color {
+    union {
+        glm::vec4 vec;
+        struct {
+            float red, green, blue, alpha;
+        };
+    };
+
+    /* Constructors */
+    color() : vec(0.0f, 0.0f, 0.0f, 1.0f) {}
+    color(float r, float g, float b) : vec(r, g, b, 1.0f) {}
+    color(float r, float g, float b, float a) : vec(r, g, b, a) {}
+
+    /* Overloaded Operator */
+    friend std::ostream &operator<<(std::ostream &outs, const color &c) {
+        outs << "Red: " << c.red << ", Green: " << c.green << ", Blue: " << c.blue << ", Alpha: " << c.alpha;
+        return outs;
+    }
+};
+
 
 class Shape {
     public:
@@ -105,7 +126,7 @@ class Shape {
         // --------------------------------------------------------
         // Collision functions
         // --------------------------------------------------------
-        virtual bool isOverlapping(const vec2& point) const;
+        virtual bool isOverlapping(const Shape& other) const = 0;
 
         // --------------------------------------------------------
         // Drawing functions
@@ -139,6 +160,9 @@ protected:
 
         /// @brief The indices of the shape
         vector<unsigned int> indices;
+
+        virtual void initVectors() = 0;
+
 };
 
 #endif //GRAPHICS_SHAPE_H

@@ -51,25 +51,6 @@ void Shape::setUniforms() const {
     this->shader.setVector4f("shapeColor", color.vec);
 }
 
-bool Shape::isOverlapping(const vec2 &point) const {
-    // TODO: Implement
-    if(this->getLeft() > point.x){
-        return false;
-    }
-    if(this->getRight() < point.x){
-        return false;
-    }
-    if(this-> getTop() < point.y){
-        return false;
-    }
-    if(this->getBottom() > point.y){
-        return false;
-    }
-    else{
-        return true;
-    }
-}
-
 // Setters
 void Shape::move(vec2 offset)         { pos += offset; }
 void Shape::moveX(float x)            { pos.x += x; }

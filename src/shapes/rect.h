@@ -10,7 +10,7 @@ using glm::vec2, glm::vec3;
 class Rect : public Shape {
 private:
     /// @brief Initializes the vertices and indices of the square
-    void initVectors();
+    void initVectors() override;
 public:
     /// @brief Construct a new Square object
     /// @details This constructor will call the InitRenderData function.
@@ -32,6 +32,11 @@ public:
     float getRight() const override;
     float getTop() const override;
     float getBottom() const override;
+
+    // TODO: decide if it makes sense to use static overlapping functions
+    static bool isOverlapping(const Rect& r1, const Rect& r2);
+    bool isOverlapping(const Rect& other) const;
+    bool isOverlapping(const Shape& other) const override;
 };
 
 
