@@ -77,8 +77,6 @@ void Engine::initShapes() {
         }
     }
 
-
-
 }
 
 void Engine::processInput() {
@@ -130,11 +128,10 @@ void Engine::processInput() {
         if(!status){
             valid += valid;
         }
-        if (valid = 25){
+        if (valid == 25){
             screen = over;
         }
     }
-
 
 
     // Save mousePressed for next frame
