@@ -93,42 +93,26 @@ void Engine::processInput() {
     if (keys[GLFW_KEY_S])
         screen = play;
 
-
-    // TODO: If we're in the play screen and an arrow key is pressed, move the spawnButton
-    // Hint: one of the indices is GLFW_KEY_UP
-    // TODO: Make sure the spawnButton cannot go off the screen
-    if(keys[GLFW_KEY_UP])
-        spawnButton->moveY(5.0f);
-    if(keys[GLFW_KEY_DOWN])
-        spawnButton->moveY(-5.0f);
-    if(keys[GLFW_KEY_RIGHT])
-        spawnButton->moveX(5.0f);
-    if(keys[GLFW_KEY_LEFT])
-        spawnButton->moveX(-5.0f);
-
-
     // Mouse position is inverted because the origin of the window is in the top left corner
     MouseY = height - MouseY; // Invert y-axis of mouse position
     bool buttonOverlapsMouse = spawnButton->isOverlapping(vec2(MouseX, MouseY));
     bool mousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
 
-    // TODO: When in play screen, if the user hovers or clicks on the button then change the spawnButton's color
+    // TODO: When in play screen, if the user hovers the square then add an outline to the square
     if(buttonOverlapsMouse == true)
         spawnButton->setColor(color{0, 1, 1, 1});
     // Hint: look at the color objects declared at the top of this file
-    // TODO: When in play screen, if the button was released then spawn confetti
-    if(mousePressed == true)
-        spawnConfetti();
+
+    // TODO: When in play screen, if the user clicks a lit square, change it to unlit
+
+    // TODO: When in play screen, if the user clicks an unlit square, change it to lit
+
+    // TODO: When a user clicks a square, change the 4 surrounding squares to their opposite value (lit -> unlit, etc.)
 
     // Hint: the button was released if it was pressed last frame and is not pressed now
-    // TODO: Make sure the spawn button is its original color when the user is not hovering or clicking on it.
+    // TODO: Make sure the square is not outlined when the user is not hovering.
     if(buttonOverlapsMouse == false)
         spawnButton->setColor(color{1, 0, 0, 1});
-
-    if(confetti.size() >= 100)
-        screen = over;
-
-
 
     // Save mousePressed for next frame
     mousePressedLastFrame = mousePressed;
@@ -141,14 +125,7 @@ void Engine::update() {
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
 
-    if(spawnButton->getPosY() < 5 or spawnButton->getPosY() > height-5){
-        spawnButton->setPos(vec2(width/2, height/2));
-    }
-    if (spawnButton->getPosX() < 5 or spawnButton->getPosX() > width-5){
-        spawnButton->setPos(vec2(width/2, height/2));
-    }
-
-    // TODO: End the game when the user spawns 100 confetti
+    // TODO: End the game when there are no more light up squares
     // If the size of the confetti vector reaches 100, change screen to over
 
 }
