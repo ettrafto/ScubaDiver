@@ -166,10 +166,16 @@ void Engine::render() {
     // Render differently depending on screen
     switch (screen) {
         case start: {
-            string message = "Press s to start";
+            string message = "Welcome to Lights out!";
+            string instructions = "Click each light";
+            string instructions1= "to turn them off";
+            string instructions2 = "Pres S to start!";
             // (12 * message.length()) is the offset to center text.
             // 12 pixels is the width of each character scaled by 1.
-            this->fontRenderer->renderText(message, width/2 - (12 * message.length()), height/2, 1, vec3{1, 1, 1});
+            this->fontRenderer->renderText(message, 125 , 450, 1, vec3{1, 1, 1});
+            this->fontRenderer->renderText(instructions, 125 , 340, 1, vec3{1, 1, 1});
+            this->fontRenderer->renderText(instructions1, 125 , 300, 1, vec3{1, 1, 1});
+            this->fontRenderer->renderText(instructions2, 125 , 150, 1, vec3{1, 1, 1});
             break;
         }
         case play: {
