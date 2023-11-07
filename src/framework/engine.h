@@ -25,7 +25,7 @@ class Engine {
         color brown = color{0.8f, 0.4f, 0.0f, 1.0f};
 
         /// @brief The width and height of the window.
-        const unsigned int width = 550, height = 550; // Window dimensions
+        const unsigned int width = 500, height = 500; // Window dimensions
 
         /// @brief Keyboard state (True if pressed, false if not pressed).
         /// @details Index this array with GLFW_KEY_{key} to get the state of a key.
