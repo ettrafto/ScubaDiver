@@ -73,6 +73,11 @@ void Engine::initShapes() {
 void Engine::processInput() {
     glfwPollEvents();
 
+    if (screen == start){
+        if(keys[GLFW_KEY_S]){
+            screen = play;
+        }
+    }
     // Set keys to true if pressed, false if released
     for (int key = 0; key < 1024; ++key) {
         if (glfwGetKey(window, key) == GLFW_PRESS)
@@ -162,4 +167,3 @@ void Engine::render() {
 bool Engine::shouldClose() {
     return glfwWindowShouldClose(window);
 }
-
