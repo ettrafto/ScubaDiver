@@ -124,10 +124,9 @@ void Engine::processInput() {
         for (int i = 0; i < squares.size(); ++i) {
             bool mousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
             if (squares[i]->isMouseOver(*squares[i], MouseX, MouseY) && mousePressed) {
-                squares[i]->setColor(gray); // Set the square to gray when clicked
-                rectStatus[i] = true;      // Update the status to true for this square
-                // You might want to break here if you only want to process one click per frame
-                // break;
+                squares[i]->setColor(gray);
+                rectStatus[i] = true;
+
             } else if (rectStatus[i]) {    // Check if the status for this square is true
                 squares[i]->setColor(gray); // If so, set the square to gray
             } else {

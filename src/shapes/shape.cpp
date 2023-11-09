@@ -59,6 +59,7 @@ void Shape::setPos(vec2 pos)          { this->pos = pos; }
 void Shape::setPosX(float x)          { pos.x = x; }
 void Shape::setPosY(float y)          { pos.y = y; }
 
+void Shape::setColor(struct color c)    { color = c; }
 void Shape::setColor(vec4 c)     { color.vec = c; }
 void Shape::setColor(vec3 c)     { color.vec = vec4(c, 1.0); }
 void Shape::setRed(float r)      { color.red = r; }
@@ -87,7 +88,3 @@ float Shape::getBlue() const    { return color.blue; }
 float Shape::getOpacity() const { return color.alpha; }
 
 void Shape::update(float deltaTime) {}
-
-bool areColorsEqual(const glm::vec3& col1, const glm::vec3& col2, float threshold = 0.001f) {
-    return glm::all(glm::lessThan(glm::abs(col1 - col2), glm::vec3(threshold)));
-}
