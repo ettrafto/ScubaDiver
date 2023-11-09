@@ -74,6 +74,7 @@ class Shape {
         virtual float getBottom() const = 0;
 
         // Color Functions
+        color getColor() const;
         vec4 getColor4() const;
         vec3 getColor3() const;
         float getRed() const;
@@ -149,14 +150,14 @@ protected:
         //
         vec2 size;
 
-        /// @brief The VAO of the shape
-        color color;
-
         /// @brief The Vertex Array Object, Vertex Buffer Object, and Element Buffer Object of the shape.
         unsigned int VAO, VBO, EBO;
 
         /// @brief The vertices of the shape
         vector<float> vertices;
+
+        /// @brief The VAO of the shape
+        color color;
 
         /// @brief The indices of the shape
         vector<unsigned int> indices;

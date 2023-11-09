@@ -114,10 +114,29 @@ void Engine::processInput() {
         screen = play;
 
     if (screen == play) {
+
         // Check if the mouse is hovering over any of the squares
         for (auto &s : outline) {
             bool isHovered = s->isMouseOver(*s, MouseX, MouseY);
             s->setHover(isHovered);
+        }
+
+        for (int i = 0; i < squares.size(); ++i) {
+            bool mousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+            if (squares[i]->isMouseOver(*squares[i], MouseX, MouseY) && mousePressed) {
+                glm::vec3 currentColor = squares[i]->getColor3();
+                if (currentColor == gray) {
+                    squares[i]->setColor(brown); // Set the square to gray when clicked
+                    rectStatus[i] = false;
+                } else {
+                squares[i]->setColor(gray); // Set the square to gray when clicked
+                rectStatus[i] = true;      // Update the status to true for this square
+                }
+            } else if (rectStatus[i]) {    // Check if the status for this square is true
+                squares[i]->setColor(gray); // If so, set the square to gray
+            } else {
+                squares[i]->setColor(brown); // Otherwise, set it to brown
+            }
         }
         for(bool status:RectStatus){
             if(!status){
@@ -185,7 +204,7 @@ void Engine::render() {
                 o->setUniforms();
 
                 if (o->isHovered()) {
-                    o->setColor(red); // Set the color of the outline
+                    o->setColor(red);
                 } else {
                     o->setColor(transparent);
                 }
