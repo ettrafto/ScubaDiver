@@ -120,8 +120,19 @@ void Engine::processInput() {
                       << " Left: " << s->getLeft() << " Right: " << s->getRight()
                       << " Bottom: " << s->getBottom() << " Top: " << s->getTop()
                       << " isHovered: " << isHovered << std::endl;
+
+        }
+        for(bool status:RectStatus){
+            if(!status){
+                valid += valid;
+            }
+            if (valid == 25){
+                screen = over;
+            }
         }
     }
+
+
 
     // TODO: When in play screen, if the user clicks a lit square, change it to unlit
     // Adding so i can push it
@@ -133,23 +144,15 @@ void Engine::processInput() {
     // Hint: the button was released if it was pressed last frame and is not pressed now
     // TODO: Make sure the square is not outlined when the user is not hovering.
 
-}
+
+
+
 /*
-//iterates through status checking if all lights are off
-for(bool status:RectStatus){
-    if(!status){
-        valid += valid;
-    }
-    if (valid == 25){
-        screen = over;
-    }
-}
-
-
 // Save mousePressed for next frame
 mousePressedLastFrame = mousePressed;
-}
+
 */
+}
 
 void Engine::update() {
     // Calculate delta time
