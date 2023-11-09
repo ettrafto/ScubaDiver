@@ -104,6 +104,10 @@ class Engine {
         /// @note The projection matrix is used in the vertex shader.
         /// @note We don't have to change this matrix since the screen size never changes.
         mat4 PROJECTION = ortho(0.0f, static_cast<float>(width), 0.0f, static_cast<float>(height), -1.0f, 1.0f);
+
+    //creating parallel array to represent if a rect is on or off
+    bool rectStatus[25];
+
 };
 
 #endif //GRAPHICS_ENGINE_H
