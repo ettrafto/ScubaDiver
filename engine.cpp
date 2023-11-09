@@ -71,12 +71,11 @@ void Engine::initShapes() {
     // squares
     int numSquares = 25;
     vec2 squareSize = vec2{75,75};
-    for (int y = 50; y < 501; y+= 100){
-        for (int x = 50; x < 501; x+= 100){
+    for (int y = 50; y < 501; y+= 100) {
+        for (int x = 50; x < 501; x += 100) {
             squares.push_back(make_unique<Rect>(shapeShader, vec2{x, y}, squareSize, brown));
         }
     }
-
 }
 
 void Engine::processInput() {
@@ -113,7 +112,7 @@ void Engine::processInput() {
     if (screen == play) {
         // Check if the mouse is hovering over any of the squares
         for (auto &s : squares) {
-            bool isHovered = s->isMouseOver(MouseX, MouseY);
+            bool isHovered = s->isMouseOver(*s, MouseX, MouseY);
             s->setHover(isHovered); // Update the hover state
             // Debug output
             std::cout << "MouseX: " << MouseX << " MouseY: " << MouseY
@@ -121,35 +120,35 @@ void Engine::processInput() {
                       << " Bottom: " << s->getBottom() << " Top: " << s->getTop()
                       << " isHovered: " << isHovered << std::endl;
         }
+        }
+
+        // TODO: When in play screen, if the user clicks a lit square, change it to unlit
+        // Adding so i can push it
+
+        // TODO: When in play screen, if the user clicks an unlit square, change it to lit
+
+        // TODO: When a user clicks a square, change the 4 surrounding squares to their opposite value (lit -> unlit, etc.)
+
+        // Hint: the button was released if it was pressed last frame and is not pressed now
+        // TODO: Make sure the square is not outlined when the user is not hovering.
+
+    }
+    /*
+    //iterates through status checking if all lights are off
+    for(bool status:RectStatus){
+        if(!status){
+            valid += valid;
+        }
+        if (valid == 25){
+            screen = over;
+        }
     }
 
-    // TODO: When in play screen, if the user clicks a lit square, change it to unlit
-    // Adding so i can push it
 
-    // TODO: When in play screen, if the user clicks an unlit square, change it to lit
-
-    // TODO: When a user clicks a square, change the 4 surrounding squares to their opposite value (lit -> unlit, etc.)
-
-    // Hint: the button was released if it was pressed last frame and is not pressed now
-    // TODO: Make sure the square is not outlined when the user is not hovering.
-
-}
-/*
-//iterates through status checking if all lights are off
-for(bool status:RectStatus){
-    if(!status){
-        valid += valid;
-    }
-    if (valid == 25){
-        screen = over;
-    }
-}
-
-
-// Save mousePressed for next frame
-mousePressedLastFrame = mousePressed;
-}
-*/
+    // Save mousePressed for next frame
+    mousePressedLastFrame = mousePressed;
+ }
+    */
 
 void Engine::update() {
     // Calculate delta time
