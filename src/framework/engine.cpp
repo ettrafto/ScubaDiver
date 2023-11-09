@@ -10,10 +10,6 @@ Engine::Engine() : keys() {
     this->initWindow();
     this->initShaders();
     this->initShapes();
-
-    originalFill = {.5, 0, 0, 1};
-    outlineFill.vec = originalFill.vec + vec4{1, 0, 0, 1};
-    pressFill.vec = originalFill.vec - vec4{0.5, 0.5, 0.5, 0};
 }
 
 Engine::~Engine() {}
@@ -68,6 +64,14 @@ void Engine::initShaders() {
 }
 
 void Engine::initShapes() {
+    // outline
+    vec2 squareSize2 = vec2{90,90};
+    for (int y = 50; y < 501; y+= 100){
+        for (int x = 50; x < 501; x+= 100){
+            outline.push_back(make_unique<Rect>(shapeShader, vec2{x, y}, squareSize2, transparent));
+        }
+    }
+
     // squares
     int numSquares = 25;
     vec2 squareSize = vec2{75,75};
@@ -83,9 +87,7 @@ void Engine::processInput() {
     glfwPollEvents();
 
     // Mouse position is inverted because the origin of the window is in the top left corner
-    MouseY = height - MouseY; // Invert y-axis of mouse position
     bool mousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
-
     //creates array of states and valid counter
     bool RectStatus[25];
     int valid = 0;
@@ -104,6 +106,7 @@ void Engine::processInput() {
 
     // Mouse position saved to check for collisions
     glfwGetCursorPos(window, &MouseX, &MouseY);
+    MouseY = height - MouseY;
 
     // TODO: If we're in the start screen and the user presses s, change screen to play
     // Hint: The index is GLFW_KEY_S
@@ -112,15 +115,9 @@ void Engine::processInput() {
 
     if (screen == play) {
         // Check if the mouse is hovering over any of the squares
-        for (auto &s : squares) {
-            bool isHovered = s->isMouseOver(MouseX, MouseY);
-            s->setHover(isHovered); // Update the hover state
-            // Debug output
-            std::cout << "MouseX: " << MouseX << " MouseY: " << MouseY
-                      << " Left: " << s->getLeft() << " Right: " << s->getRight()
-                      << " Bottom: " << s->getBottom() << " Top: " << s->getTop()
-                      << " isHovered: " << isHovered << std::endl;
-
+        for (auto &s : outline) {
+            bool isHovered = s->isMouseOver(*s, MouseX, MouseY);
+            s->setHover(isHovered);
         }
         for(bool status:RectStatus){
             if(!status){
@@ -132,8 +129,6 @@ void Engine::processInput() {
         }
     }
 
-
-
     // TODO: When in play screen, if the user clicks a lit square, change it to unlit
     // Adding so i can push it
 
@@ -143,9 +138,6 @@ void Engine::processInput() {
 
     // Hint: the button was released if it was pressed last frame and is not pressed now
     // TODO: Make sure the square is not outlined when the user is not hovering.
-
-
-
 
 /*
 // Save mousePressed for next frame
@@ -161,12 +153,11 @@ void Engine::update() {
     lastFrame = currentFrame;
 
     // TODO: End the game when there are no more light up squares
-    // If the size of the confetti vector reaches 100, change screen to over
 
 }
 
 void Engine::render() {
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Set background color
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
     // Set shader to use for all shapes
@@ -188,19 +179,27 @@ void Engine::render() {
             break;
         }
         case play: {
+            // Draw the outlines first
+            for (auto &o : outline) {
+                // Set uniforms for the shader
+                o->setUniforms();
+
+                if (o->isHovered()) {
+                    o->setColor(red); // Set the color of the outline
+                } else {
+                    o->setColor(transparent);
+                }
+                // Render the outline
+                o->draw();
+            }
+
+            // Then draw the squares
             for (auto &s : squares) {
                 // Set uniforms for the shader
                 s->setUniforms();
 
-                // Check if we should render the outline or change the color
-                if (s->isHovered()) { // Check if the square is hovered
-                    // Set the color to be used when the square is hovered
-                    shapeShader.setVector4f("color", pressFill.vec); // Assuming hoverColor is the color you want when hovered
-                } else {
-                    // Set the color to be used when the square is not hovered
-                    shapeShader.setVector4f("color", originalFill.vec); // Assuming normalColor is the normal color of the square
-                }
-
+                // You can check if it is hovered to change the color or add logic here
+                s->setColor(brown); // Assuming brown is the color you want for squares
                 // Render the square
                 s->draw(); // This should render the square itself
             }

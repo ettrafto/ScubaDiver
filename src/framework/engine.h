@@ -23,6 +23,8 @@ class Engine {
         /// @brief The actual GLFW window.
         GLFWwindow* window{};
         color brown = color{0.8f, 0.4f, 0.0f, 1.0f};
+        color red = color{1.0f,0.0f,0.0f,1.0f};
+        color transparent = color(1.0f,1.0f,1.0f,0.0f);
 
         /// @brief The width and height of the window.
         const unsigned int width = 500, height = 500; // Window dimensions
@@ -41,6 +43,8 @@ class Engine {
 
         // Shapes
         vector <unique_ptr<Rect>> squares;
+        vector <unique_ptr<Rect>> outlineFill;
+        vector <unique_ptr<Rect>> outline;
 
         // Shaders
         Shader shapeShader;
