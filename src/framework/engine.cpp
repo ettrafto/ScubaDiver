@@ -86,13 +86,13 @@ void Engine::initShapes() {
 void Engine::processInput() {
     glfwPollEvents();
 
-// Mouse position is inverted because the origin of the window is in the top left corner
+    // Mouse position is inverted because the origin of the window is in the top left corner
     bool mousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
-//creates array of states and valid counter
+    //creates array of states and valid counter
     bool RectStatus[25];
     int valid = 0;
 
-// Set keys to true if pressed, false if released
+    // Set keys to true if pressed, false if released
     for (int key = 0; key < 1024; ++key) {
         if (glfwGetKey(window, key) == GLFW_PRESS)
             keys[key] = true;
@@ -159,7 +159,69 @@ void Engine::processInput() {
             }
         }
     }
+
+    // TODO: When in play screen, if the user clicks a lit square, change it to unlit
+    // Adding so i can push it
+
+    // TODO: When in play screen, if the user clicks an unlit square, change it to lit
+
+    // TODO: When a user clicks a square, change the 4 surrounding squares to their opposite value (lit -> unlit, etc.)
+    //when user clicks
+
+    // Select x+1, x-1, x+5, and x-5 (if they are within bounds)
+    int clickedSquare;
+    int x = clickedSquare;
+    if (x >= 0 && x < 25) {
+        int xPlus1 = (x + 5 < 25) ? (x + 5) : -1;
+        int xMinus1 = (x - 1 >= 0) ? (x + 5) : -1;
+        int xPlus5 = (x + 5 < 25) ? (x + 5) : -1;
+        int xMinus5 = (x - 5 < 25) ? (x + 5) : -1;
+
+if (xPlus1 != -1){
+    if (!rectStatus[xPlus1]) {
+        rectStatus[xPlus1] = true;
+    } else {
+        rectStatus[xPlus1] = false;
+    }
 }
+
+if (xMinus1 != -1){
+    if (!rectStatus[xMinus1]) {
+        rectStatus[xMinus1] = true;
+    } else {
+        rectStatus[xMinus1] = false;
+    }
+}
+
+if (xMinus5 != -1){
+    if (!rectStatus[xMinus5]) {
+        rectStatus[xMinus5] = true;
+    } else {
+        rectStatus[xMinus5] = false;
+    }
+}
+
+if(xPlus5 != -1){
+    if (!rectStatus[xPlus5]) {
+        rectStatus[xPlus5] = true;
+    } else {
+        rectStatus[xPlus5] = false;
+    }
+}
+
+    }
+}
+
+
+    // Hint: the button was released if it was pressed last frame and is not pressed now
+    // TODO: Make sure the square is not outlined when the user is not hovering.
+
+/*
+// Save mousePressed for next frame
+mousePressedLastFrame = mousePressed;
+
+*/
+
 
 void Engine::update() {
     // Calculate delta time
@@ -207,6 +269,17 @@ void Engine::render() {
                 // Render the outline
                 o->draw();
             }
+            /*
+            for (size_t i = 0; i < squares.size(); ++i) {
+                if (i < 25 / 25) {
+                    // Assuming rectState is an array of booleans
+                    squares[i]->setColor(rectState[i] ? white : brown);
+                } else {
+                    // Handle the case where the index is out of bounds of rectState
+                    // You may want to set a default color or handle this case in a way that makes sense for your application.
+                }
+            }
+             */
 
             // Then draw the squares
             for (auto &s : squares) {
