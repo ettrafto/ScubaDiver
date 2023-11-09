@@ -160,27 +160,38 @@ void Engine::processInput() {
         int xPlus5 = (x + 5 < 25) ? (x + 5) : -1;
         int xMinus5 = (x - 5 < 25) ? (x + 5) : -1;
 
+if (xPlus1 != -1){
+    if (!rectStatus[xPlus1]) {
+        rectStatus[xPlus1] = true;
+    } else {
+        rectStatus[xPlus1] = false;
+    }
+}
 
-        if (xPlus1 == false) {
-            rectStatus[xPlus1] = true;
-        } else {
-            rectStatus[xPlus1] = false;
-        }
-        if (xMinus1 == false) {
-            rectStatus[xMinus1] = true;
-        } else {
-            rectStatus[xMinus1] = false;
-        }
-        if (xPlus5 == false) {
-            rectStatus[xPlus5] = true;
-        } else {
-            rectStatus[xPlus5] = false;
-        }
-        if (xMinus5 == false) {
-            rectStatus[xMinus5] = true;
-        } else {
-            rectStatus[xMinus5] = false;
-        }
+if (xMinus1 != -1){
+    if (!rectStatus[xMinus1]) {
+        rectStatus[xMinus1] = true;
+    } else {
+        rectStatus[xMinus1] = false;
+    }
+}
+
+if (xMinus5 != -1){
+    if (!rectStatus[xMinus5]) {
+        rectStatus[xMinus5] = true;
+    } else {
+        rectStatus[xMinus5] = false;
+    }
+}
+
+if(xPlus5 != -1){
+    if (!rectStatus[xPlus5]) {
+        rectStatus[xPlus5] = true;
+    } else {
+        rectStatus[xPlus5] = false;
+    }
+}
+
     }
 }
 
