@@ -116,10 +116,11 @@ void Engine::processInput() {
             bool isHovered = s->isMouseOver(MouseX, MouseY);
             s->setHover(isHovered); // Update the hover state
             // Debug output
-            std::cout << "MouseX: " << MouseX << " MouseY: " << MouseY
+            /* std::cout << "MouseX: " << MouseX << " MouseY: " << MouseY
                       << " Left: " << s->getLeft() << " Right: " << s->getRight()
                       << " Bottom: " << s->getBottom() << " Top: " << s->getTop()
                       << " isHovered: " << isHovered << std::endl;
+                      */
         }
         }
 

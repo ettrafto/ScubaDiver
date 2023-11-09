@@ -115,7 +115,7 @@ void Rect::renderOutline(Shader &shader) const {
 }
 
 void Rect::initOutline() {
-    float outlineScale = 1.1f; // Adjust this value as needed to make the outline bigger
+    float outlineScale = 2.0f; // Adjust this value as needed to make the outline bigger
 
     outlineVertices = {
             -0.5f * outlineScale,  0.5f * outlineScale,  // Top left
