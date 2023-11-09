@@ -1,14 +1,14 @@
 #include "rect.h"
 
 Rect::Rect(Shader & shader, vec2 pos, vec2 size, struct color color)
-    : Shape(shader, pos, size, color) {
+        : Shape(shader, pos, size, color), outlineColor({1, 0, 0, 1}) {
     initVectors();
     initVAO();
     initVBO();
     initEBO();
 }
 
-Rect::Rect(Rect const& other) : Shape(other) {
+Rect::Rect(Rect const& other) : Shape(other), outlineColor({1, 0, 0, 1}) {
     initVectors();
     initVAO();
     initVBO();
@@ -80,6 +80,16 @@ bool Rect::isOverlapping(const Shape &other) const {
     return false;
 }
 
+// Function to set the hover state
+void Rect::setHover(bool isHovered) {
+    this->hovered = isHovered;
+}
+
+// Function to check if the rectangle is hovered
+bool Rect::isHovered() {
+    return this->hovered;
+}
+
 // Implementation of isMouseOver method
 bool Rect::isMouseOver(double mouseX, double mouseY) const {
     // Adjust for the position and size of the rectangle
@@ -88,15 +98,58 @@ bool Rect::isMouseOver(double mouseX, double mouseY) const {
 }
 
 void Rect::renderOutline(Shader &shader) const {
-    // Set the shader and color for the outline
+    // Set the shader to use
     shader.use();
-    shader.setVector4f("color", glm::vec4(1.0f, 0.0f, 0.0f, 0.75f));
 
-    glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, 8, GL_UNSIGNED_INT, 0);
+    // Set the color for the outline
+    shader.setVector4f("color", outlineColor.vec);
+
+    // Bind the VAO for the outline
+    glBindVertexArray(outlineVAO);
+
+    // Draw the outline
+    glDrawElements(GL_TRIANGLES, outlineIndices.size(), GL_UNSIGNED_INT, 0);
+
+    // Unbind the VAO
     glBindVertexArray(0);
 }
 
-void Rect::setHover(bool hover) {
-    this->hovered = hover;
+void Rect::initOutline() {
+    float outlineScale = 1.1f; // Adjust this value as needed to make the outline bigger
+
+    outlineVertices = {
+            -0.5f * outlineScale,  0.5f * outlineScale,  // Top left
+            0.5f * outlineScale,  0.5f * outlineScale,  // Top right
+            -0.5f * outlineScale, -0.5f * outlineScale,  // Bottom left
+            0.5f * outlineScale, -0.5f * outlineScale   // Bottom right
+    };
+
+    outlineIndices = {
+            0, 1, 2, // First triangle
+            1, 2, 3  // Second triangle
+    };
+
+    // Generate and bind the VAO for the outline
+    glGenVertexArrays(1, &outlineVAO);
+    glBindVertexArray(outlineVAO);
+
+    // Generate and bind the VBO for the outline
+    glGenBuffers(1, &outlineVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, outlineVBO);
+    glBufferData(GL_ARRAY_BUFFER, outlineVertices.size() * sizeof(float), outlineVertices.data(), GL_STATIC_DRAW);
+
+    // Generate and bind the EBO for the outline
+    glGenBuffers(1, &outlineEBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, outlineEBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, outlineIndices.size() * sizeof(unsigned int), outlineIndices.data(), GL_STATIC_DRAW);
+
+    // Set the vertex attributes pointers
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // Unbind the VBO
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    // Unbind the VAO
+    glBindVertexArray(0);
 }

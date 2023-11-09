@@ -4,15 +4,15 @@ enum state {start, play, over};
 state screen;
 
 // Colors
-color originalFill, hoverFill, pressFill;
+color originalFill, outlineFill, pressFill;
 
 Engine::Engine() : keys() {
     this->initWindow();
     this->initShaders();
     this->initShapes();
 
-    originalFill = {1, 0, 0, 1};
-    hoverFill.vec = originalFill.vec + vec4{0.5, 0.5, 0.5, 0};
+    originalFill = {.5, 0, 0, 1};
+    outlineFill.vec = originalFill.vec + vec4{1, 0, 0, 1};
     pressFill.vec = originalFill.vec - vec4{0.5, 0.5, 0.5, 0};
 }
 
@@ -82,6 +82,14 @@ void Engine::initShapes() {
 void Engine::processInput() {
     glfwPollEvents();
 
+    // Mouse position is inverted because the origin of the window is in the top left corner
+    MouseY = height - MouseY; // Invert y-axis of mouse position
+    bool mousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+
+    //creates array of states and valid counter
+    bool RectStatus[25];
+    int valid = 0;
+
     // Set keys to true if pressed, false if released
     for (int key = 0; key < 1024; ++key) {
         if (glfwGetKey(window, key) == GLFW_PRESS)
@@ -103,14 +111,16 @@ void Engine::processInput() {
         screen = play;
 
     if (screen == play) {
-        // TODO: When in play screen, if the user hovers the square then add an outline to the square
         // Check if the mouse is hovering over any of the squares
         for (auto &s : squares) {
             bool isHovered = s->isMouseOver(MouseX, MouseY);
-            s->setHover(isHovered); // You need to have a method to update the hover state in your Rect class
-            if (isHovered) {
-                s->renderOutline(shapeShader); // Render the outline only if the square is being hovered over
-            }
+            s->setHover(isHovered); // Update the hover state
+            // Debug output
+            std::cout << "MouseX: " << MouseX << " MouseY: " << MouseY
+                      << " Left: " << s->getLeft() << " Right: " << s->getRight()
+                      << " Bottom: " << s->getBottom() << " Top: " << s->getTop()
+                      << " isHovered: " << isHovered << std::endl;
+        }
         }
 
         // TODO: When in play screen, if the user clicks a lit square, change it to unlit
@@ -124,19 +134,7 @@ void Engine::processInput() {
         // TODO: Make sure the square is not outlined when the user is not hovering.
 
     }
-    // Mouse position is inverted because the origin of the window is in the top left corner
-    MouseY = height - MouseY; // Invert y-axis of mouse position
-    bool mousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
-
-    //creates array of states and valid counter
-    bool RectStatus[25];
-    int valid = 0;
-
-
-
-
-
-
+    /*
     //iterates through status checking if all lights are off
     for(bool status:RectStatus){
         if(!status){
@@ -150,8 +148,8 @@ void Engine::processInput() {
 
     // Save mousePressed for next frame
     mousePressedLastFrame = mousePressed;
-
-}
+ }
+    */
 
 void Engine::update() {
     // Calculate delta time
@@ -191,9 +189,13 @@ void Engine::render() {
                 // Set uniforms for the shader
                 s->setUniforms();
 
-                // Check if we should render the outline
-                if (s->isMouseOver(MouseX, MouseY)) {
-                    s->renderOutline(shapeShader); // This should render the outline
+                // Check if we should render the outline or change the color
+                if (s->isHovered()) { // Check if the square is hovered
+                    // Set the color to be used when the square is hovered
+                    shapeShader.setVector4f("color", pressFill.vec); // Assuming hoverColor is the color you want when hovered
+                } else {
+                    // Set the color to be used when the square is not hovered
+                    shapeShader.setVector4f("color", originalFill.vec); // Assuming normalColor is the normal color of the square
                 }
 
                 // Render the square
