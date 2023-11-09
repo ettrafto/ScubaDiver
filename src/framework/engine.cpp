@@ -77,7 +77,7 @@ void Engine::initShapes() {
     vec2 squareSize = vec2{75,75};
     for (int y = 50; y < 501; y+= 100){
         for (int x = 50; x < 501; x+= 100){
-            squares.push_back(make_unique<Rect>(shapeShader, vec2{x, y}, squareSize, brown));
+            squares.push_back(make_unique<Rect>(shapeShader, vec2{x, y}, squareSize, yellow));
         }
     }
 
@@ -130,7 +130,7 @@ void Engine::processInput() {
             } else if (rectStatus[i]) {    // Check if the status for this square is true
                 squares[i]->setColor(gray); // If so, set the square to gray
             } else {
-                squares[i]->setColor(brown); // Otherwise, set it to brown
+                squares[i]->setColor(yellow); // Otherwise, set it to yellow
             }
         }
         for(bool status:RectStatus){
@@ -213,7 +213,7 @@ void Engine::render() {
                 s->setUniforms();
 
                 // You can check if it is hovered to change the color or add logic here
-                s->setColor(brown); // Assuming brown is the color you want for squares
+                s->setColor(yellow); // Assuming yellow is the color you want for squares
                 // Render the square
                 s->draw(); // This should render the square itself
             }

@@ -22,7 +22,7 @@ class Engine {
     private:
         /// @brief The actual GLFW window.
         GLFWwindow* window{};
-        color brown = color{.9f, 0.8f, 0.0f, 1.0f};
+        color yellow = color{.9f, 0.8f, 0.0f, 1.0f};
         color gray = color{.7f, 0.7f, 0.7f, 1.0f};
         color red = color{1.0f,0.0f,0.0f,1.0f};
         color transparent = color(1.0f,1.0f,1.0f,0.0f);
