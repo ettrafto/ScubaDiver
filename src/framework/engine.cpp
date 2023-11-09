@@ -86,13 +86,13 @@ void Engine::initShapes() {
 void Engine::processInput() {
     glfwPollEvents();
 
-    // Mouse position is inverted because the origin of the window is in the top left corner
+// Mouse position is inverted because the origin of the window is in the top left corner
     bool mousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
-    //creates array of states and valid counter
+//creates array of states and valid counter
     bool RectStatus[25];
     int valid = 0;
 
-    // Set keys to true if pressed, false if released
+// Set keys to true if pressed, false if released
     for (int key = 0; key < 1024; ++key) {
         if (glfwGetKey(window, key) == GLFW_PRESS)
             keys[key] = true;
@@ -100,64 +100,65 @@ void Engine::processInput() {
             keys[key] = false;
     }
 
-    // Close window if escape key is pressed
+// Close window if escape key is pressed
     if (keys[GLFW_KEY_ESCAPE])
         glfwSetWindowShouldClose(window, true);
 
-    // Mouse position saved to check for collisions
+// Mouse position saved to check for collisions
     glfwGetCursorPos(window, &MouseX, &MouseY);
     MouseY = height - MouseY;
 
-    // TODO: If we're in the start screen and the user presses s, change screen to play
-    // Hint: The index is GLFW_KEY_S
+// TODO: If we're in the start screen and the user presses s, change screen to play
+// Hint: The index is GLFW_KEY_S
     if (keys[GLFW_KEY_S])
         screen = play;
 
     if (screen == play) {
 
         // Check if the mouse is hovering over any of the squares
-        for (auto &s : outline) {
+        for (auto &s: outline) {
             bool isHovered = s->isMouseOver(*s, MouseX, MouseY);
             s->setHover(isHovered);
         }
 
         for (int i = 0; i < squares.size(); ++i) {
             bool mousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
-            if (squares[i]->isMouseOver(*squares[i], MouseX, MouseY) && mousePressed) {
-                squares[i]->setColor(gray);
-                rectStatus[i] = true;
+            // Use a separate boolean to track whether the square was clicked on this frame
+            bool clicked = squares[i]->isMouseOver(*squares[i], MouseX, MouseY) && mousePressed && !mousePressedLastFrame;
 
-            } else if (rectStatus[i]) {    // Check if the status for this square is true
-                squares[i]->setColor(gray); // If so, set the square to gray
+            if (clicked) {
+                // Toggle the status of the square
+                rectStatus[i] = !rectStatus[i];
+
+                // Now set the color based on the new status
+                if (rectStatus[i]) {
+                    squares[i]->setColor(gray);
+                } else {
+                    squares[i]->setColor(yellow);
+                }
             } else {
-                squares[i]->setColor(yellow); // Otherwise, set it to yellow
+                // If not clicked, just set the color based on the current status
+                if (rectStatus[i]) {
+                    squares[i]->setColor(gray);
+                } else {
+                    squares[i]->setColor(yellow);
+                }
             }
         }
-        for(bool status:RectStatus){
-            if(!status){
+
+// At the end of the frame, remember to update `mousePressedLastFrame`
+        mousePressedLastFrame = mousePressed;
+
+
+        for (bool status: RectStatus) {
+            if (!status) {
                 valid += valid;
             }
-            if (valid == 25){
+            if (valid == 25) {
                 screen = over;
             }
         }
     }
-
-    // TODO: When in play screen, if the user clicks a lit square, change it to unlit
-    // Adding so i can push it
-
-    // TODO: When in play screen, if the user clicks an unlit square, change it to lit
-
-    // TODO: When a user clicks a square, change the 4 surrounding squares to their opposite value (lit -> unlit, etc.)
-
-    // Hint: the button was released if it was pressed last frame and is not pressed now
-    // TODO: Make sure the square is not outlined when the user is not hovering.
-
-/*
-// Save mousePressed for next frame
-mousePressedLastFrame = mousePressed;
-
-*/
 }
 
 void Engine::update() {
