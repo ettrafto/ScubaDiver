@@ -68,7 +68,6 @@ void Engine::initShaders() {
 }
 
 void Engine::initShapes() {
-    //creating parralell array to represent if a rect is on or off
 
     // squares
     int numSquares = 25;

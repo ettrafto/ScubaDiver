@@ -70,8 +70,7 @@ add_definitions(-DGLFW_INCLUDE_NONE
 
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCES} ${PROJECT_HEADERS}
                                ${PROJECT_SHADERS} ${PROJECT_CONFIGS}
-                               ${VENDORS_SOURCES}
-        ../../../../Personal/Coding/M4OEP-ettrafto/src/framework/maze.h)
+                               ${VENDORS_SOURCES})
 
 target_link_libraries(${PROJECT_NAME} glfw freetype)
 
