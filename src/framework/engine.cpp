@@ -149,6 +149,41 @@ void Engine::processInput() {
     // TODO: When in play screen, if the user clicks an unlit square, change it to lit
 
     // TODO: When a user clicks a square, change the 4 surrounding squares to their opposite value (lit -> unlit, etc.)
+    //when user clicks
+
+    // Select x+1, x-1, x+5, and x-5 (if they are within bounds)
+    int clickedSquare;
+    int x = clickedSquare;
+    if (x >= 0 && x < 25) {
+        int xPlus1 = (x + 5 < 25) ? (x + 5) : -1;
+        int xMinus1 = (x - 1 >= 0) ? (x + 5) : -1;
+        int xPlus5 = (x + 5 < 25) ? (x + 5) : -1;
+        int xMinus5 = (x - 5 < 25) ? (x + 5) : -1;
+
+
+        if (xPlus1 == false) {
+            rectStatus[xPlus1] = true;
+        } else {
+            rectStatus[xPlus1] = false;
+        }
+        if (xMinus1 == false) {
+            rectStatus[xMinus1] = true;
+        } else {
+            rectStatus[xMinus1] = false;
+        }
+        if (xPlus5 == false) {
+            rectStatus[xPlus5] = true;
+        } else {
+            rectStatus[xPlus5] = false;
+        }
+        if (xMinus5 == false) {
+            rectStatus[xMinus5] = true;
+        } else {
+            rectStatus[xMinus5] = false;
+        }
+    }
+}
+
 
     // Hint: the button was released if it was pressed last frame and is not pressed now
     // TODO: Make sure the square is not outlined when the user is not hovering.
@@ -158,7 +193,7 @@ void Engine::processInput() {
 mousePressedLastFrame = mousePressed;
 
 */
-}
+
 
 void Engine::update() {
     // Calculate delta time
@@ -206,6 +241,17 @@ void Engine::render() {
                 // Render the outline
                 o->draw();
             }
+            /*
+            for (size_t i = 0; i < squares.size(); ++i) {
+                if (i < 25 / 25) {
+                    // Assuming rectState is an array of booleans
+                    squares[i]->setColor(rectState[i] ? white : brown);
+                } else {
+                    // Handle the case where the index is out of bounds of rectState
+                    // You may want to set a default color or handle this case in a way that makes sense for your application.
+                }
+            }
+             */
 
             // Then draw the squares
             for (auto &s : squares) {
