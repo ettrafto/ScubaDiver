@@ -71,12 +71,11 @@ void Engine::initShapes() {
     // squares
     int numSquares = 25;
     vec2 squareSize = vec2{75,75};
-    for (int y = 50; y < 501; y+= 100){
-        for (int x = 50; x < 501; x+= 100){
+    for (int y = 50; y < 501; y+= 100) {
+        for (int x = 50; x < 501; x += 100) {
             squares.push_back(make_unique<Rect>(shapeShader, vec2{x, y}, squareSize, brown));
         }
     }
-
 }
 
 void Engine::processInput() {
@@ -113,14 +112,13 @@ void Engine::processInput() {
     if (screen == play) {
         // Check if the mouse is hovering over any of the squares
         for (auto &s : squares) {
-            bool isHovered = s->isMouseOver(MouseX, MouseY);
+            bool isHovered = s->isMouseOver(*s, MouseX, MouseY);
             s->setHover(isHovered); // Update the hover state
             // Debug output
-            /* std::cout << "MouseX: " << MouseX << " MouseY: " << MouseY
+            std::cout << "MouseX: " << MouseX << " MouseY: " << MouseY
                       << " Left: " << s->getLeft() << " Right: " << s->getRight()
                       << " Bottom: " << s->getBottom() << " Top: " << s->getTop()
                       << " isHovered: " << isHovered << std::endl;
-                      */
         }
         }
 

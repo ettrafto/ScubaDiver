@@ -91,10 +91,26 @@ bool Rect::isHovered() {
 }
 
 // Implementation of isMouseOver method
-bool Rect::isMouseOver(double mouseX, double mouseY) const {
+bool Rect::isMouseOver(const Rect &rect, double mouseX, double mouseY) {
     // Adjust for the position and size of the rectangle
-    return mouseX >= getLeft() && mouseX <= getRight() &&
-           mouseY >= getBottom() && mouseY <= getTop();
+    // There are only two cases when the mouse is *not* over the rectangle:
+    //    1. when the mouse X is to the left of the left edge of the rectangle
+    //    2. when the mouse X is to the right of the right edge of the rectangle
+    //    3. when the mouse Y is above the top edge of the rectangle
+    //    4. when the mouse Y is below the bottom edge of the rectangle
+    if (mouseX < rect.getLeft()) {
+        return false; // Mouse is to the left of the rectangle
+    }
+    if (mouseX > rect.getRight()) {
+        return false; // Mouse is to the right of the rectangle
+    }
+    if (mouseY > rect.getTop()) {
+        return false; // Mouse is above the rectangle
+    }
+    if (mouseY < rect.getBottom()) {
+        return false; // Mouse is below the rectangle
+    }
+    return true; // Mouse is within the rectangle
 }
 
 void Rect::renderOutline(Shader &shader) const {

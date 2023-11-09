@@ -44,7 +44,7 @@ public:
     bool isOverlapping(const Shape& other) const override;
     void initOutline(); // Initialize the outline vertices and indices
     void renderOutline(Shader &shader) const; // Render the outline
-    bool isMouseOver(double mouseX, double mouseY) const;
+    bool isMouseOver(const Rect &rect, double mouseX, double mouseY);
     bool isHovered();
     void setHover(bool isHovered);
 };
