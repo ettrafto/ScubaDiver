@@ -81,7 +81,9 @@ void Engine::initShapes() {
             squares.push_back(make_unique<Rect>(shapeShader, vec2{x, y}, squareSize, yellow));
         }
     }
-
+    for (int i = 0; i<25; i++) {
+        rectStatus[i] = false;
+    }
 }
 
 void Engine::processInput() {
@@ -116,6 +118,7 @@ void Engine::processInput() {
 
     if (screen == play) {
 
+
         // Check if the mouse is hovering over any of the squares
         for (auto &s: outline) {
             bool isHovered = s->isMouseOver(*s, MouseX, MouseY);
@@ -123,6 +126,7 @@ void Engine::processInput() {
         }
 
         for (int i = 0; i < squares.size(); ++i) {
+
             bool mousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
             // Use a separate boolean to track whether the square was clicked on this frame
             bool clicked = squares[i]->isMouseOver(*squares[i], MouseX, MouseY) && mousePressed && !mousePressedLastFrame;
