@@ -126,23 +126,138 @@ void Engine::processInput() {
             bool mousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
             // Use a separate boolean to track whether the square was clicked on this frame
             bool clicked = squares[i]->isMouseOver(*squares[i], MouseX, MouseY) && mousePressed && !mousePressedLastFrame;
-
             if (clicked) {
                 // Toggle the status of the square
                 rectStatus[i] = !rectStatus[i];
+                if(i == 0){
+                    rectStatus[1] = !rectStatus[1];
+                    rectStatus[5] = !rectStatus[5];
+                }if(i == 1){
+                    rectStatus[0] = !rectStatus[0];
+                    rectStatus[2] = !rectStatus[2];
+                    rectStatus[6] = !rectStatus[6];
+                }if(i == 2){
+                    rectStatus[1] = !rectStatus[1];
+                    rectStatus[3] = !rectStatus[3];
+                    rectStatus[7] = !rectStatus[7];
+                }if(i == 3){
+                    rectStatus[2] = !rectStatus[2];
+                    rectStatus[4] = !rectStatus[4];
+                    rectStatus[8] = !rectStatus[8];
+                }if(i == 4){
+                    rectStatus[3] = !rectStatus[3];
+                    rectStatus[9] = !rectStatus[9];
+                }if(i == 5){
+                    rectStatus[0] = !rectStatus[0];
+                    rectStatus[6] = !rectStatus[6];
+                    rectStatus[10] = !rectStatus[10];
+                }if(i == 6) {
+                    rectStatus[1] = !rectStatus[1];
+                    rectStatus[5] = !rectStatus[5];
+                    rectStatus[7] = !rectStatus[7];
+                    rectStatus[11] = !rectStatus[11];
+                }if(i == 7) {
+                    rectStatus[2] = !rectStatus[2];
+                    rectStatus[6] = !rectStatus[6];
+                    rectStatus[8] = !rectStatus[8];
+                    rectStatus[12] = !rectStatus[12];
+                }if(i == 8) {
+                    rectStatus[3] = !rectStatus[3];
+                    rectStatus[7] = !rectStatus[7];
+                    rectStatus[9] = !rectStatus[9];
+                    rectStatus[13] = !rectStatus[13];
+                }if(i == 9){
+                    rectStatus[4] = !rectStatus[4];
+                    rectStatus[8] = !rectStatus[8];
+                    rectStatus[14] = !rectStatus[14];
+                }if(i == 10){
+                    rectStatus[5] = !rectStatus[5];
+                    rectStatus[11] = !rectStatus[11];
+                    rectStatus[15] = !rectStatus[15];
+                }if(i == 11){
+                    rectStatus[6] = !rectStatus[6];
+                    rectStatus[10] = !rectStatus[10];
+                    rectStatus[12] = !rectStatus[12];
+                    rectStatus[16] = !rectStatus[16];
+                }if(i == 12){
+                    rectStatus[7] = !rectStatus[7];
+                    rectStatus[11] = !rectStatus[11];
+                    rectStatus[13] = !rectStatus[13];
+                    rectStatus[17] = !rectStatus[17];
+                }if(i == 13){
+                    rectStatus[8] = !rectStatus[8];
+                    rectStatus[12] = !rectStatus[12];
+                    rectStatus[14] = !rectStatus[14];
+                    rectStatus[18] = !rectStatus[18];
+                }if(i == 14){
+                    rectStatus[9] = !rectStatus[9];
+                    rectStatus[13] = !rectStatus[13];
+                    rectStatus[19] = !rectStatus[19];
+                }if(i == 15){
+                    rectStatus[10] = !rectStatus[10];
+                    rectStatus[16] = !rectStatus[16];
+                    rectStatus[20] = !rectStatus[20];
+                }if(i == 16){
+                    rectStatus[11] = !rectStatus[11];
+                    rectStatus[15] = !rectStatus[15];
+                    rectStatus[17] = !rectStatus[17];
+                    rectStatus[21] = !rectStatus[21];
+                }if(i == 17){
+                    rectStatus[12] = !rectStatus[12];
+                    rectStatus[16] = !rectStatus[16];
+                    rectStatus[18] = !rectStatus[18];
+                    rectStatus[22] = !rectStatus[22];
+                }if(i == 18){
+                    rectStatus[13] = !rectStatus[13];
+                    rectStatus[17] = !rectStatus[17];
+                    rectStatus[19] = !rectStatus[19];
+                    rectStatus[23] = !rectStatus[23];
+                }if(i == 19){
+                    rectStatus[14] = !rectStatus[14];
+                    rectStatus[18] = !rectStatus[18];
+                    rectStatus[24] = !rectStatus[24];
+                }if(i == 20){
+                    rectStatus[15] = !rectStatus[15];
+                    rectStatus[21] = !rectStatus[21];
+                }if(i == 21){
+                    rectStatus[16] = !rectStatus[16];
+                    rectStatus[20] = !rectStatus[20];
+                    rectStatus[22] = !rectStatus[22];
+                }if(i == 22){
+                    rectStatus[17] = !rectStatus[17];
+                    rectStatus[21] = !rectStatus[21];
+                    rectStatus[23] = !rectStatus[23];
+                }if(i == 23){
+                    rectStatus[18] = !rectStatus[18];
+                    rectStatus[22] = !rectStatus[22];
+                    rectStatus[24] = !rectStatus[24];
+                }if(i == 24){
+                    rectStatus[19] = !rectStatus[19];
+                    rectStatus[23] = !rectStatus[23];
+                }if(i == 23) {
+                    rectStatus[18] = !rectStatus[18];
+                    rectStatus[22] = !rectStatus[22];
+                    rectStatus[24] = !rectStatus[24];
+                    rectStatus[24] = !rectStatus[24];
+                }
+
 
                 // Now set the color based on the new status
                 if (rectStatus[i]) {
                     squares[i]->setColor(gray);
+                    rectStatus[i] = true;
                 } else {
                     squares[i]->setColor(yellow);
+                    rectStatus[i] = false;
                 }
             } else {
                 // If not clicked, just set the color based on the current status
                 if (rectStatus[i]) {
                     squares[i]->setColor(gray);
+                    rectStatus[i] = true;
                 } else {
                     squares[i]->setColor(yellow);
+                    rectStatus[i] = false;
                 }
             }
         }
@@ -160,69 +275,7 @@ void Engine::processInput() {
             }
         }
     }
-
-    // TODO: When in play screen, if the user clicks a lit square, change it to unlit
-    // Adding so i can push it
-
-    // TODO: When in play screen, if the user clicks an unlit square, change it to lit
-
-    // TODO: When a user clicks a square, change the 4 surrounding squares to their opposite value (lit -> unlit, etc.)
-    //when user clicks
-
-    // Select x+1, x-1, x+5, and x-5 (if they are within bounds)
-    int clickedSquare;
-    int x = clickedSquare;
-    if (x >= 0 && x < 25) {
-        int xPlus1 = (x + 5 < 25) ? (x + 5) : -1;
-        int xMinus1 = (x - 1 >= 0) ? (x + 5) : -1;
-        int xPlus5 = (x + 5 < 25) ? (x + 5) : -1;
-        int xMinus5 = (x - 5 < 25) ? (x + 5) : -1;
-
-if (xPlus1 != -1){
-    if (!rectStatus[xPlus1]) {
-        rectStatus[xPlus1] = true;
-    } else {
-        rectStatus[xPlus1] = false;
-    }
 }
-
-if (xMinus1 != -1){
-    if (!rectStatus[xMinus1]) {
-        rectStatus[xMinus1] = true;
-    } else {
-        rectStatus[xMinus1] = false;
-    }
-}
-
-if (xMinus5 != -1){
-    if (!rectStatus[xMinus5]) {
-        rectStatus[xMinus5] = true;
-    } else {
-        rectStatus[xMinus5] = false;
-    }
-}
-
-if(xPlus5 != -1){
-    if (!rectStatus[xPlus5]) {
-        rectStatus[xPlus5] = true;
-    } else {
-        rectStatus[xPlus5] = false;
-    }
-}
-
-    }
-}
-
-
-    // Hint: the button was released if it was pressed last frame and is not pressed now
-    // TODO: Make sure the square is not outlined when the user is not hovering.
-
-/*
-// Save mousePressed for next frame
-mousePressedLastFrame = mousePressed;
-
-*/
-
 
 void Engine::update() {
     // Calculate delta time
