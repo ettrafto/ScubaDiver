@@ -42,8 +42,6 @@ unsigned int Engine::initWindow(bool debug) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glfwSwapInterval(1);
-
-
     screen = start;
     return 0;
 }
@@ -117,6 +115,7 @@ void Engine::processInput() {
     if (keys[GLFW_KEY_S])
         screen = play;
 
+
     if (screen == play) {
 
         // Check if the mouse is hovering over any of the squares
@@ -130,6 +129,7 @@ void Engine::processInput() {
             // Use a separate boolean to track whether the square was clicked on this frame
             bool clicked = squares[i]->isMouseOver(*squares[i], MouseX, MouseY) && mousePressed && !mousePressedLastFrame;
             if (clicked) {
+                clicker++;
                 // Toggle the status of the square
                 rectStatus[i] = !rectStatus[i];
                 if(i == 0){
@@ -271,15 +271,22 @@ void Engine::processInput() {
 
 // At the end of the frame, remember to update `mousePressedLastFrame`
         mousePressedLastFrame = mousePressed;
-
-        for (bool status: rectStatus) {
-            if (!status) {
-                valid += valid;
-            }
-            if (valid == 25) {
-                screen = over;
-            }
+        bool hasWon = true;
+    for(int i = 0; i < rectStatus.size(); ++i){
+        if(rectStatus[i] == false){
+            hasWon = false;
         }
+        if(clicker == 0){
+            startPoint = std::chrono::system_clock::now();
+        }
+    }
+    if(hasWon == true){
+
+        screen = over;
+        if(elapsedTime == -1){
+            updateTime();
+        }
+    }
     }
 }
 
@@ -288,9 +295,11 @@ void Engine::update() {
     float currentFrame = glfwGetTime();
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
+}
 
-    // TODO: End the game when there are no more light up squares
-
+void Engine::updateTime() {
+    endPoint = std::chrono::system_clock::now();
+    elapsedTime = (endPoint - startPoint).count()/(1000000000);
 }
 
 void Engine::render() {
@@ -316,6 +325,7 @@ void Engine::render() {
             break;
         }
         case play: {
+            string displayClicks = "Number of Clicks: " + std::to_string(clicker);
             // Draw the outlines first
             for (auto &o : outline) {
                 // Set uniforms for the shader
@@ -351,11 +361,18 @@ void Engine::render() {
                 // Render the square
                 s->draw(); // This should render the square itself
             }
+            this->fontRenderer->renderText(displayClicks,width/2, height,0.75,vec3{1,1,1});
 
             break;
         }
         case over: {
+
             string message = "You win!";
+            string message1 = "Clicks Needed to Win: " + std::to_string(clicker);
+            string message2 = "Time Elapsed: " + std::to_string(elapsedTime) + "s";
+            this->fontRenderer->renderText(message, 125 , 450, 1, vec3{1, 1, 1});
+            this->fontRenderer->renderText(message1, 125 , 425, 1, vec3{1, 1, 1});
+            this->fontRenderer->renderText(message2, 125, 400, 1, vec3{1,1,1});
             break;
         }
     }
