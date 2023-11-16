@@ -13,6 +13,9 @@ private:
     unsigned int outlineVAO, outlineVBO, outlineEBO;
     void initVectors() override;
     struct color outlineColor;
+
+    bool wall;
+
 public:
     bool hovered  = false;
     std::vector<float> outlineVertices;
@@ -47,6 +50,9 @@ public:
     bool isMouseOver(const Rect &rect, double mouseX, double mouseY);
     bool isHovered();
     void setHover(bool isHovered);
+
+    bool isWall() const;
+    void setWall(bool isWall);
 };
 
 

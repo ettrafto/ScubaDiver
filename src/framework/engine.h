@@ -5,8 +5,6 @@
 #include <memory>
 #include <iostream>
 #include <GLFW/glfw3.h>
-#include <time.h>
-#include <chrono>
 
 #include "shaderManager.h"
 #include "fontRenderer.h"
@@ -30,7 +28,7 @@ class Engine {
         color transparent = color(1.0f,1.0f,1.0f,0.0f);
 
         /// @brief The width and height of the window.
-        const unsigned int width = 500, height = 550; // Window dimensions
+        const unsigned int width = 2000, height = 2000; // Window dimensions
 
         /// @brief Keyboard state (True if pressed, false if not pressed).
         /// @details Index this array with GLFW_KEY_{key} to get the state of a key.
@@ -53,17 +51,30 @@ class Engine {
         Shader shapeShader;
         Shader textShader;
 
-        // clicker, keeps track of number of clicks on all squares
-        unsigned int clicker = 0;
-
-        //start and end time points
-        std::chrono::time_point<std::chrono::system_clock> startPoint, endPoint;
-        double elapsedTime = -1;
-
         double MouseX, MouseY;
         bool mousePressedLastFrame = false;
 
-    public:
+
+
+
+    //maze-related members
+    int gameDimensions = 50;
+    int gameHeight = height * 0.9;
+    int gameWindowPosX = height * 0.1;
+    int gameWindowPosY = height * 0.1;
+
+    float rectDimen;
+
+    std::vector<std::vector<Rect>> maze;
+
+
+    // Function to generate the maze
+    void addWalls(int x, int y, std::vector<std::pair<int, int>>& walls);
+    void generateMaze();
+
+
+
+public:
         /// @brief Constructor for the Engine class.
         /// @details Initializes window and shaders.
         Engine();
@@ -82,6 +93,8 @@ class Engine {
         /// @brief Initializes the shapes to be rendered.
         void initShapes();
 
+        /// @brief Pushes back a new colored rectangle to the confetti vector.
+        void spawnConfetti();
 
         /// @brief Processes input from the user.
         /// @details (e.g. keyboard input, mouse input, etc.)
@@ -90,11 +103,6 @@ class Engine {
         /// @brief Updates the game state.
         /// @details (e.g. collision detection, delta time, etc.)
         void update();
-
-        /// @brief updates time.
-        /// @details sets end time when called, calculates time elapsed by converting nanoseconds to seconds
-        /// @other time is a fake social construct
-        void updateTime();
 
         /// @brief Renders the game state.
         /// @details Displays/renders objects on the screen.
@@ -123,7 +131,7 @@ class Engine {
         mat4 PROJECTION = ortho(0.0f, static_cast<float>(width), 0.0f, static_cast<float>(height), -1.0f, 1.0f);
 
     //creating parallel array to represent if a rect is on or off
-    vector<bool> rectStatus;
+    bool rectStatus[25];
 
 };
 

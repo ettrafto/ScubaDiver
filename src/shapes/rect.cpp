@@ -28,15 +28,15 @@ void Rect::draw() const {
 
 void Rect::initVectors() {
     this->vertices.insert(vertices.end(), {
-        -0.5f, 0.5f,   // Top left
-         0.5f, 0.5f,   // Top right
-        -0.5f, -0.5f,  // Bottom left
-         0.5f, -0.5f   // Bottom right
+            -0.5f, 0.5f,   // Top left
+            0.5f, 0.5f,   // Top right
+            -0.5f, -0.5f,  // Bottom left
+            0.5f, -0.5f   // Bottom right
     });
 
     this->indices.insert(indices.end(), {
-        0, 1, 2, // First triangle
-        1, 2, 3  // Second triangle
+            0, 1, 2, // First triangle
+            1, 2, 3  // Second triangle
     });
 }
 // Overridden Getters from Shape
@@ -111,4 +111,11 @@ bool Rect::isMouseOver(const Rect &rect, double mouseX, double mouseY) {
         return false; // Mouse is below the rectangle
     }
     return true; // Mouse is within the rectangle
+}
+bool Rect::isWall() const {
+    return wall;
+}
+
+void Rect::setWall(bool isWall) {
+    wall = isWall;
 }
