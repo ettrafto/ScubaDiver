@@ -111,7 +111,7 @@ class Engine {
         mat4 PROJECTION = ortho(0.0f, static_cast<float>(width), 0.0f, static_cast<float>(height), -1.0f, 1.0f);
 
     //creating parallel array to represent if a rect is on or off
-    bool rectStatus[25];
+    vector<bool> rectStatus;
 
 };
 

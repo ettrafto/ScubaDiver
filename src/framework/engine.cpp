@@ -81,9 +81,10 @@ void Engine::initShapes() {
             squares.push_back(make_unique<Rect>(shapeShader, vec2{x, y}, squareSize, yellow));
         }
     }
-    for (int i = 0; i<25; i++) {
-        rectStatus[i] = false;
+    for (int i = 0; i < 25; ++i){
+        rectStatus.push_back(false);
     }
+
 }
 
 void Engine::processInput() {
@@ -92,7 +93,7 @@ void Engine::processInput() {
     // Mouse position is inverted because the origin of the window is in the top left corner
     bool mousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
     //creates array of states and valid counter
-    bool RectStatus[25];
+
     int valid = 0;
 
     // Set keys to true if pressed, false if released
@@ -118,7 +119,6 @@ void Engine::processInput() {
 
     if (screen == play) {
 
-
         // Check if the mouse is hovering over any of the squares
         for (auto &s: outline) {
             bool isHovered = s->isMouseOver(*s, MouseX, MouseY);
@@ -126,7 +126,6 @@ void Engine::processInput() {
         }
 
         for (int i = 0; i < squares.size(); ++i) {
-
             bool mousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
             // Use a separate boolean to track whether the square was clicked on this frame
             bool clicked = squares[i]->isMouseOver(*squares[i], MouseX, MouseY) && mousePressed && !mousePressedLastFrame;
@@ -238,11 +237,6 @@ void Engine::processInput() {
                 }if(i == 24){
                     rectStatus[19] = !rectStatus[19];
                     rectStatus[23] = !rectStatus[23];
-                }if(i == 23) {
-                    rectStatus[18] = !rectStatus[18];
-                    rectStatus[22] = !rectStatus[22];
-                    rectStatus[24] = !rectStatus[24];
-                    rectStatus[24] = !rectStatus[24];
                 }
 
 
@@ -265,12 +259,20 @@ void Engine::processInput() {
                 }
             }
         }
+        for (auto &s : squares){
+            bool mousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+            if(s->isMouseOver(*s, MouseX, MouseY) && mousePressed)
+                if (s->getColor3()==vec3{.9f, 0.8f, 0.0f})
+                    s->setColor(gray);
+                else
+                    s->setColor(yellow);
+
+        }
 
 // At the end of the frame, remember to update `mousePressedLastFrame`
         mousePressedLastFrame = mousePressed;
 
-
-        for (bool status: RectStatus) {
+        for (bool status: rectStatus) {
             if (!status) {
                 valid += valid;
             }
@@ -331,7 +333,7 @@ void Engine::render() {
             for (size_t i = 0; i < squares.size(); ++i) {
                 if (i < 25 / 25) {
                     // Assuming rectState is an array of booleans
-                    squares[i]->setColor(rectState[i] ? white : brown);
+                    squares[i]->setColor(rectState[i] ? white : yellow);
                 } else {
                     // Handle the case where the index is out of bounds of rectState
                     // You may want to set a default color or handle this case in a way that makes sense for your application.
@@ -349,6 +351,7 @@ void Engine::render() {
                 // Render the square
                 s->draw(); // This should render the square itself
             }
+
             break;
         }
         case over: {
