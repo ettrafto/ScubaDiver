@@ -91,6 +91,9 @@ class Engine {
         /// @details (e.g. collision detection, delta time, etc.)
         void update();
 
+        /// @brief updates time.
+        /// @details sets end time when called, calculates time elapsed by converting nanoseconds to seconds
+        /// @other time is a fake social construct
         void updateTime();
 
         /// @brief Renders the game state.
