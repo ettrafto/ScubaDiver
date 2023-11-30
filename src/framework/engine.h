@@ -11,6 +11,13 @@
 #include "../shapes/rect.h"
 #include "../shapes/shape.h"
 #include "debug.h"
+#include <d2d1.h>
+#include <d2d1helper.h>
+#include <random>
+#include <thread>
+#include <algorithm>
+
+
 
 using std::vector, std::unique_ptr, std::make_unique, glm::ortho, glm::mat4, glm::vec3, glm::vec4;
 
@@ -19,116 +26,130 @@ using std::vector, std::unique_ptr, std::make_unique, glm::ortho, glm::mat4, glm
  * @details The Engine class is responsible for initializing the GLFW window, loading shaders, and rendering the game state.
  */
 class Engine {
-    private:
-        /// @brief The actual GLFW window.
-        GLFWwindow* window{};
-        color yellow = color{.9f, 0.8f, 0.0f, 1.0f};
-        color gray = color{.7f, 0.7f, 0.7f, 1.0f};
-        color red = color{1.0f,0.0f,0.0f,1.0f};
-        color transparent = color(1.0f,1.0f,1.0f,0.0f);
+private:
+    /// @brief The actual GLFW window.
+    GLFWwindow* window{};
+    color yellow = color{.9f, 0.8f, 0.0f, 1.0f};
+    color gray = color{.7f, 0.7f, 0.7f, 1.0f};
+    color red = color{1.0f,0.0f,0.0f,1.0f};
+    color transparent = color(1.0f,1.0f,1.0f,0.0f);
 
-        /// @brief The width and height of the window.
-        const unsigned int width = 2000, height = 2000; // Window dimensions
+    /// @brief The width and height of the window.
+    int width = 2000, height = 2000; // Window dimensions
 
-        /// @brief Keyboard state (True if pressed, false if not pressed).
-        /// @details Index this array with GLFW_KEY_{key} to get the state of a key.
-        bool keys[1024];
+    /// @brief Keyboard state (True if pressed, false if not pressed).
+    /// @details Index this array with GLFW_KEY_{key} to get the state of a key.
+    bool keys[1024];
 
-        /// @brief Responsible for loading and storing all the shaders used in the project.
-        /// @details Initialized in initShaders()
-        unique_ptr<ShaderManager> shaderManager;
+    /// @brief Responsible for loading and storing all the shaders used in the project.
+    /// @details Initialized in initShaders()
+    unique_ptr<ShaderManager> shaderManager;
 
-        /// @brief Responsible for rendering text on the screen.
-        /// @details Initialized in initShaders()
-        unique_ptr<FontRenderer> fontRenderer;
+    /// @brief Responsible for rendering text on the screen.
+    /// @details Initialized in initShaders()
+    unique_ptr<FontRenderer> fontRenderer;
 
-        // Shapes
-        vector <unique_ptr<Rect>> squares;
-        vector <unique_ptr<Rect>> outlineFill;
-        vector <unique_ptr<Rect>> outline;
 
-        // Shaders
-        Shader shapeShader;
-        Shader textShader;
+    //menu buttons
+    int buttonWidth;
+    int buttonHeight;
 
-        double MouseX, MouseY;
-        bool mousePressedLastFrame = false;
+    unique_ptr<Shape> startButton;
+    unique_ptr<Shape> quitButton;
 
 
 
+    // Shapes
+    vector <unique_ptr<Rect>> squares;
+    vector <unique_ptr<Rect>> outlineFill;
+    vector <unique_ptr<Rect>> outline;
+
+    // Shaders
+    Shader shapeShader;
+    Shader textShader;
+
+    double MouseX, MouseY;
+    bool mousePressedLastFrame = false;
+
+
+
+    enum class Cell { Blocked, Passage };
+
+    struct Maze;
 
     //maze-related members
-    int gameDimensions = 50;
+    int gameDimensions = 10;
+    int gameWidth = width * 0.9;
     int gameHeight = height * 0.9;
-    int gameWindowPosX = height * 0.1;
-    int gameWindowPosY = height * 0.1;
+
 
     float rectDimen;
 
-    std::vector<std::vector<Rect>> maze;
-
+    std::vector<std::vector<Rect>> map;
 
     // Function to generate the maze
     void addWalls(int x, int y, std::vector<std::pair<int, int>>& walls);
-    void generateMaze();
+    void caveGeneration();
+
+
 
 
 
 public:
-        /// @brief Constructor for the Engine class.
-        /// @details Initializes window and shaders.
-        Engine();
+    /// @brief Constructor for the Engine class.
+    /// @details Initializes window and shaders.
+    Engine();
 
-        /// @brief Destructor for the Engine class.
-        ~Engine();
+    /// @brief Destructor for the Engine class.
+    ~Engine();
 
-        /// @brief Initializes the GLFW window.
-        /// @return 0 if successful, -1 otherwise.
-        unsigned int initWindow(bool debug = false);
+    /// @brief Initializes the GLFW window.
+    /// @return 0 if successful, -1 otherwise.
+    unsigned int initWindow(bool debug = false);
 
-        /// @brief Loads shaders from files and stores them in the shaderManager.
-        /// @details Renderers are initialized here.
-        void initShaders();
+    /// @brief Loads shaders from files and stores them in the shaderManager.
+    /// @details Renderers are initialized here.
+    void initShaders();
 
-        /// @brief Initializes the shapes to be rendered.
-        void initShapes();
+    /// @brief Initializes the shapes to be rendered.
+    void initShapes();
 
-        /// @brief Pushes back a new colored rectangle to the confetti vector.
-        void spawnConfetti();
+    /// @brief Pushes back a new colored rectangle to the confetti vector.
+    void spawnConfetti();
 
-        /// @brief Processes input from the user.
-        /// @details (e.g. keyboard input, mouse input, etc.)
-        void processInput();
+    /// @brief Processes input from the user.
+    /// @details (e.g. keyboard input, mouse input, etc.)
+    void processInput();
 
-        /// @brief Updates the game state.
-        /// @details (e.g. collision detection, delta time, etc.)
-        void update();
+    /// @brief Updates the game state.
+    /// @details (e.g. collision detection, delta time, etc.)
+    void update();
 
-        /// @brief Renders the game state.
-        /// @details Displays/renders objects on the screen.
-        void render();
+    /// @brief Renders the game state.
+    /// @details Displays/renders objects on the screen.
+    void render();
 
-        /* deltaTime variables */
-        float deltaTime = 0.0f; // Time between current frame and last frame
-        float lastFrame = 0.0f; // Time of last frame (used to calculate deltaTime)
+    /* deltaTime variables */
+    float deltaTime = 0.0f; // Time between current frame and last frame
+    float lastFrame = 0.0f; // Time of last frame (used to calculate deltaTime)
 
-        // -----------------------------------
-        // Getters
-        // -----------------------------------
+    // -----------------------------------
+    // Getters
+    // -----------------------------------
 
-        /// @brief Returns true if the window should close.
-        /// @details (Wrapper for glfwWindowShouldClose()).
-        /// @return true if the window should close
-        /// @return false if the window should not close
-        bool shouldClose();
+    /// @brief Returns true if the window should close.
+    /// @details (Wrapper for glfwWindowShouldClose()).
+    /// @return true if the window should close
+    /// @return false if the window should not close
+    bool shouldClose();
 
-        /// @brief Projection matrix used for 2D rendering (orthographic projection).
-        /// @details OpenGL uses the projection matrix to map the 3D scene to a 2D viewport.
-        /// @details The projection matrix transforms coordinates in the camera space into
-        /// normalized device coordinates. (view space to clip space).
-        /// @note The projection matrix is used in the vertex shader.
-        /// @note We don't have to change this matrix since the screen size never changes.
-        mat4 PROJECTION = ortho(0.0f, static_cast<float>(width), 0.0f, static_cast<float>(height), -1.0f, 1.0f);
+    /// @brief Projection matrix used for 2D rendering (orthographic projection).
+    /// @details OpenGL uses the projection matrix to map the 3D scene to a 2D viewport.
+    /// @details The projection matrix transforms coordinates in the camera space into
+    /// normalized device coordinates. (view space to clip space).
+    /// @note The projection matrix is used in the vertex shader.
+    /// @note We don't have to change this matrix since the screen size never changes.
+    mat4 PROJECTION = ortho(0.0f, static_cast<float>(width), 0.0f, static_cast<float>(height), -1.0f, 1.0f);
 
     //creating parallel array to represent if a rect is on or off
     bool rectStatus[25];

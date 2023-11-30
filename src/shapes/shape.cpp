@@ -1,10 +1,10 @@
 #include "shape.h"
 
 Shape::Shape(Shader &shader, glm::vec2 pos, glm::vec2 size, struct color color) :
-    shader(shader), pos(pos), size(size), color(color) {}
+        shader(shader), pos(pos), size(size), color(color) {}
 
 Shape::Shape(Shape const& other) :
-    shader(other.shader), pos(other.pos), size(other.size), color(other.color) {}
+        shader(other.shader), pos(other.pos), size(other.size), color(other.color) {}
 
 // Initialize VAO
 unsigned int Shape::initVAO() {
@@ -49,6 +49,21 @@ void Shape::setUniforms() const {
     // Set the model matrix and color uniform variables in the shader
     this->shader.setMatrix4("model", model);
     this->shader.setVector4f("shapeColor", color.vec);
+}
+
+bool Shape::isOverlapping(const vec2 &point) const {
+    // Check if the point is within the bounding box of the shape
+    float left = getLeft();
+    float right = getRight();
+    float top = getTop();
+    float bottom = getBottom();
+
+    // Check if the point's coordinates are within the bounding box
+    if (point.x >= left && point.x <= right && point.y >= bottom && point.y <= top) {
+        return true; // The point is within the bounding box
+    }
+
+    return false; // The point is outside the bounding box
 }
 
 // Setters

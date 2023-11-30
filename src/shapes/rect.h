@@ -10,16 +10,9 @@ using glm::vec2, glm::vec3;
 class Rect : public Shape {
 private:
     /// @brief Initializes the vertices and indices of the square
-    unsigned int outlineVAO, outlineVBO, outlineEBO;
-    void initVectors() override;
-    struct color outlineColor;
-
-    bool wall;
-
+    void initVectors();
+    bool wall = false;
 public:
-    bool hovered  = false;
-    std::vector<float> outlineVertices;
-    std::vector<unsigned int> outlineIndices;
     /// @brief Construct a new Square object
     /// @details This constructor will call the InitRenderData function.
     /// @param shader The shader to use
@@ -41,18 +34,8 @@ public:
     float getTop() const override;
     float getBottom() const override;
 
-    // TODO: decide if it makes sense to use static overlapping functions
-    static bool isOverlapping(const Rect& r1, const Rect& r2);
-    bool isOverlapping(const Rect& other) const;
-    bool isOverlapping(const Shape& other) const override;
-    void initOutline(); // Initialize the outline vertices and indices
-    void renderOutline(Shader &shader) const; // Render the outline
-    bool isMouseOver(const Rect &rect, double mouseX, double mouseY);
-    bool isHovered();
-    void setHover(bool isHovered);
-
-    bool isWall() const;
-    void setWall(bool isWall);
+    void setWall(bool wallIn);
+    bool isWall();
 };
 
 

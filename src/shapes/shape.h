@@ -4,166 +4,141 @@
 #include "glm/glm.hpp"
 #include <vector>
 #include "../framework/shader.h"
+#include "../framework/color.h"
 
 using std::vector, glm::vec2, glm::vec3, glm::vec4, glm::mat4, glm::translate, glm::scale;
 
-// Union allows students to access the color as a vec4 with color.vec or as a float with color.red, etc.
-struct color {
-    union {
-        glm::vec4 vec;
-        struct {
-            float red, green, blue, alpha;
-        };
-    };
-
-    /* Constructors */
-    color() : vec(0.0f, 0.0f, 0.0f, 1.0f) {}
-    color(float r, float g, float b) : vec(r, g, b, 1.0f) {}
-    color(float r, float g, float b, float a) : vec(r, g, b, a) {}
-
-    /* Overloaded Operator */
-    friend std::ostream &operator<<(std::ostream &outs, const color &c) {
-        outs << "Red: " << c.red << ", Green: " << c.green << ", Blue: " << c.blue << ", Alpha: " << c.alpha;
-        return outs;
-    }
-};
-
-
 class Shape {
-    public:
-        /// @brief Construct a new Shape object
-        /// @param shader The shader to use for rendering
-        /// @param pos The position of the shape
-        /// @param size The size of the shape
-        /// @param color The color of the shape
-        Shape(Shader& shader, vec2 pos, glm::vec2 size, color color);
+public:
+    /// @brief Construct a new Shape object
+    /// @param shader The shader to use for rendering
+    /// @param pos The position of the shape
+    /// @param size The size of the shape
+    /// @param color The color of the shape
+    Shape(Shader& shader, vec2 pos, glm::vec2 size, color color);
 
-        /// @brief Copy constructor for Shape
-        Shape(Shape const& other);
+    /// @brief Copy constructor for Shape
+    Shape(Shape const& other);
 
-        /// @brief Destroy the Shape object
-        virtual ~Shape() = default;
+    /// @brief Destroy the Shape object
+    virtual ~Shape() = default;
 
-        // --------------------------------------------------------
-        // Initialization functions
-        // --------------------------------------------------------
+    // --------------------------------------------------------
+    // Initialization functions
+    // --------------------------------------------------------
 
-        /// @brief Initializes the VAO.
-        /// @details This function is called in the derived classes' constructor.
-        unsigned int initVAO();
+    /// @brief Initializes the VAO.
+    /// @details This function is called in the derived classes' constructor.
+    unsigned int initVAO();
 
-        /// @brief Initializes the VBO.
-        /// @details This function is called in the derived classes' constructor.
-        void initVBO();
+    /// @brief Initializes the VBO.
+    /// @details This function is called in the derived classes' constructor.
+    void initVBO();
 
-        /// @brief Initializes the EBO.
-        /// @details This function is called in the derived classes' constructor.
-        /// @details If function has no indices, pass nullptr for indices and 0 for indexCount.
-        void initEBO();
+    /// @brief Initializes the EBO.
+    /// @details This function is called in the derived classes' constructor.
+    /// @details If function has no indices, pass nullptr for indices and 0 for indexCount.
+    void initEBO();
 
-        // --------------------------------------------------------
-        // Getters
-        // --------------------------------------------------------
-        // Position/Movement Functions
-        float getPosX() const;
-        float getPosY() const;
-        vec2 getPos() const;
-        virtual float getLeft() const = 0;
-        virtual float getRight() const = 0;
-        virtual float getTop() const = 0;
-        virtual float getBottom() const = 0;
+    // --------------------------------------------------------
+    // Getters
+    // --------------------------------------------------------
+    // Position/Movement Functions
+    float getPosX() const;
+    float getPosY() const;
+    vec2 getPos() const;
+    virtual float getLeft() const = 0;
+    virtual float getRight() const = 0;
+    virtual float getTop() const = 0;
+    virtual float getBottom() const = 0;
 
-        // Color Functions
-        color getColor() const;
-        vec4 getColor4() const;
-        vec3 getColor3() const;
-        float getRed() const;
-        float getGreen() const;
-        float getBlue() const;
-        float getOpacity() const;
+    // Color Functions
+    vec4 getColor4() const;
+    vec3 getColor3() const;
+    float getRed() const;
+    float getGreen() const;
+    float getBlue() const;
+    float getOpacity() const;
 
-        // Size Functions
-        vec2 getSize() const;
+    // Size Functions
+    vec2 getSize() const;
 
-        // Velocity Functions
-        vec2 getVelocity() const;
+    // Velocity Functions
+    vec2 getVelocity() const;
 
-        // Change Functions (add/sub to current value)
-        void changePos(vec2 deltaPos);
-        void changeWidth(float deltaWidth);
-        void changeHeight(float deltaHeight);
+    // Change Functions (add/sub to current value)
+    void changePos(vec2 deltaPos);
+    void changeWidth(float deltaWidth);
+    void changeHeight(float deltaHeight);
 
-        // --------------------------------------------------------
-        // Setters
-        // --------------------------------------------------------
+    // --------------------------------------------------------
+    // Setters
+    // --------------------------------------------------------
 
-        // Position
-        void setPos(vec2 pos);
-        void setPosX(float x);
-        void setPosY(float y);
+    // Position
+    void setPos(vec2 pos);
+    void setPosX(float x);
+    void setPosY(float y);
 
-        // Movement Setters (add/sub to current value)
-        void move(vec2 offset);
-        void moveX(float x);
-        void moveY(float y);
+    // Movement Setters (add/sub to current value)
+    void move(vec2 offset);
+    void moveX(float x);
+    void moveY(float y);
 
-        // Size
-        void setSize(vec2 size);
-        void setSizeX(float x);
-        void setSizeY(float y);
+    // Size
+    void setSize(vec2 size);
+    void setSizeX(float x);
+    void setSizeY(float y);
 
-        // Change Functions
-        void update(float deltaTime);
+    // Change Functions
+    void update(float deltaTime);
 
-        // Color
-        void setColor(color color);
-        void setColor(vec4 color);
-        void setColor(vec3 color);
-        void setRed(float r);
-        void setGreen(float g);
-        void setBlue(float b);
-        void setOpacity(float a);
+    // Color
+    void setColor(color color);
+    void setColor(vec4 color);
+    void setColor(vec3 color);
+    void setRed(float r);
+    void setGreen(float g);
+    void setBlue(float b);
+    void setOpacity(float a);
 
-        // --------------------------------------------------------
-        // Collision functions
-        // --------------------------------------------------------
-        virtual bool isOverlapping(const Shape& other) const = 0;
+    // --------------------------------------------------------
+    // Collision functions
+    // --------------------------------------------------------
+    virtual bool isOverlapping(const vec2& point) const;
 
-        // --------------------------------------------------------
-        // Drawing functions
-        // --------------------------------------------------------
+    // --------------------------------------------------------
+    // Drawing functions
+    // --------------------------------------------------------
 
-        /// @brief Sets the uniform variables from members, and calls the virtual draw function
-        void setUniforms() const;
+    /// @brief Sets the uniform variables from members, and calls the virtual draw function
+    void setUniforms() const;
 
-        /// @brief Pure virtual function to draw the shape.
-        virtual void draw() const = 0;
+    /// @brief Pure virtual function to draw the shape.
+    virtual void draw() const = 0;
 
 protected:
-        /// @brief Shader used to draw all abstract shapes.
-        /// @note TODO This will need to be a pointer for custom shaders.
-        Shader & shader;
+    /// @brief Shader used to draw all abstract shapes.
+    /// @note TODO This will need to be a pointer for custom shaders.
+    Shader & shader;
 
-        /// @brief The position of the shape
-        vec2 pos;
+    /// @brief The position of the shape
+    vec2 pos;
 
-        //
-        vec2 size;
+    //
+    vec2 size;
 
-        /// @brief The Vertex Array Object, Vertex Buffer Object, and Element Buffer Object of the shape.
-        unsigned int VAO, VBO, EBO;
+    /// @brief The VAO of the shape
+    color color;
 
-        /// @brief The vertices of the shape
-        vector<float> vertices;
+    /// @brief The Vertex Array Object, Vertex Buffer Object, and Element Buffer Object of the shape.
+    unsigned int VAO, VBO, EBO;
 
-        /// @brief The VAO of the shape
-        color color;
+    /// @brief The vertices of the shape
+    vector<float> vertices;
 
-        /// @brief The indices of the shape
-        vector<unsigned int> indices;
-
-        virtual void initVectors() = 0;
-
+    /// @brief The indices of the shape
+    vector<unsigned int> indices;
 };
 
 #endif //GRAPHICS_SHAPE_H

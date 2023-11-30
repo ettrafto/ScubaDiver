@@ -1,13 +1,14 @@
 
 #include "engine.h"
 
-enum state {start, play, over};
+enum state {start,gameMenu,pause, play, over};
 state screen;
 
 // Colors
 color originalFill, outlineFill, pressFill;
 
 Engine::Engine() : keys() {
+
     this->initWindow();
     this->initShaders();
     this->initShapes();
@@ -15,23 +16,17 @@ Engine::Engine() : keys() {
 
 Engine::~Engine() {}
 
+void Engine::caveGeneration() {
 
-void Engine::addWalls(int x, int y, std::vector<std::pair<int, int>>& walls) {
-    // Add the neighboring walls to the list
-    if (x > 1) walls.push_back({x - 2, y});
-    if (x < 2 * gameDimensions - 2) walls.push_back({x + 2, y});
-    if (y > 1) walls.push_back({x, y - 2});
-    if (y < 2 * gameDimensions - 2) walls.push_back({x, y + 2});
-}
-void Engine::generateMaze() {
 
-    rectDimen = static_cast<float>(gameHeight) / gameDimensions;
-    vec2 squareSize = { rectDimen, rectDimen };
+    rectDimen = height / gameDimensions;
+    vec2 squareSize = {rectDimen, rectDimen};
 
-    // Initialize the maze with all walls and create Rect objects
-    for (int y = 0; y < gameDimensions * 2 - 1; ++y) {
+    // Initialize the map with all walls and create Rect objects
+
+    for (int y = 0; y < gameDimensions; ++y) {
         vector<Rect> rects = {};
-        for (int x = 0; x < gameDimensions * 2 - 1; ++x) {
+        for (int x = 0; x < gameDimensions; ++x) {
             // Set the position based on the grid and rectDimen
             vec2 position = {x * rectDimen, y * rectDimen};
 
@@ -39,62 +34,94 @@ void Engine::generateMaze() {
             color fill = gray; // Initially, set all rectangles to be walls
 
             // Create a Rect object based on the position, size, and color
-            rects.push_back(Rect(shapeShader, position, squareSize, yellow));
+            rects.push_back(Rect(shapeShader, position, squareSize, fill));
+            rects[x].setWall(true);
+
+
         }
-        maze.push_back(rects);
+        map.push_back(rects);
     }
-
-    // Initialize a list to store walls
-    std::vector<std::pair<int, int>> walls;
-
-    // Start from a random point
-    int startX = rand() % gameDimensions;
-    int startY = rand() % gameDimensions;
-
-    // Mark the starting point as part of the maze
-    maze[startY][startX].setWall(false);
-
-    // Add neighboring walls to the list
-    addWalls(startX, startY, walls);
-
-    while (!walls.empty()) {
-        // Randomly select a wall from the list
-        int randomIndex = rand() % walls.size();
-        auto randomWall = walls[randomIndex];
-        int wallX = randomWall.first;
-        int wallY = randomWall.second;
-
-        // Find the adjacent cell
-        int adjX, adjY;
-        if (wallX % 2 == 0) {
-            adjX = wallX;
-            adjY = (wallY - 1) / 2;
-        } else {
-            adjX = (wallX - 1) / 2;
-            adjY = wallY;
-        }
-
-        // Check if the adjacent cell is not part of the maze
-        if (maze[adjY][adjX].isWall()) {
-            // Connect the wall to the maze
-            maze[wallY][wallX].setWall(false);
-
-            // Mark the adjacent cell as part of the maze
-            maze[adjY][adjX].setWall(false);
-
-            // Add neighboring walls to the list
-            addWalls(wallX, wallY, walls);
-        }
-
-        // Remove the selected wall from the list
-        walls.erase(walls.begin() + randomIndex);
-    }
-        // TODO: debug isWalls
-
-        //render();
-
-
 }
+
+
+
+       /* // Initialize a list to store walls
+        std::vector<std::pair<int, int>> walls;
+
+        // Start from a random point
+        int startX = rand() % gameDimensions;
+        int startY = rand() % gameDimensions;
+
+        // Mark the starting point as part of the maze
+        maze[startY * 2][startX * 2].setWall(false);
+
+        // Add neighboring walls to the list
+        addWalls(startX * 2, startY * 2, walls);
+
+        int iteration = 0;
+        while (!walls.empty()) {
+            // Randomly select a wall from the list
+            int randomIndex = rand() % walls.size();
+            auto randomWall = walls[randomIndex];
+            int wallX = randomWall.first;
+            int wallY = randomWall.second;
+
+            cout << "WallX:" << wallX << " wallY: " << wallY << endl;
+
+            // Find the adjacent cell
+            int adjX, adjY;
+
+            if (wallX % 2 == 0) {
+                // Vertical wall edge
+                adjX = wallX;
+                adjY = wallY - 1;
+                // Ensure adjY is within bounds
+                if (adjY < 0) {
+                    adjY = 0; // Adjust to the minimum valid index
+                }
+            } else {
+                // Horizontal wall edge
+                adjX = wallX - 1;
+                adjY = wallY;
+                // Ensure adjX is within bounds
+                if (adjX < 0) {
+                    adjX = 0; // Adjust to the minimum valid index
+                }
+            }
+
+            // Now, you may also want to check the upper bounds of adjX and adjY
+            // Assuming gameDimensions is the maximum valid index
+            if (adjX >= gameDimensions * 2 - 1) {
+                adjX = gameDimensions * 2 - 2; // Adjust to the maximum valid index
+            }
+
+            if (adjY >= gameDimensions * 2 - 1) {
+                adjY = gameDimensions * 2 - 2; // Adjust to the maximum valid index
+            }
+
+            cout << "AdjX:" << adjX << " AdjY: " << adjY << endl;
+
+            // Check if the adjacent cell is not part of the maze
+            if (maze[adjY][adjX].isWall()) {
+                // Connect the wall to the maze
+                maze[wallY][wallX].setWall(false);
+
+                // Mark the adjacent cell as part of the maze
+                maze[adjY][adjX].setWall(false);
+
+                // Add neighboring walls to the list
+                addWalls(wallX, wallY, walls);
+            }
+
+            // Remove the selected wall from the list
+            walls.erase(walls.begin() + randomIndex);
+
+            cout << iteration << endl;
+            iteration = 1 + iteration;
+        }*/
+   // }
+
+
 
 
 unsigned int Engine::initWindow(bool debug) {
@@ -110,31 +137,24 @@ unsigned int Engine::initWindow(bool debug) {
 #endif
     glfwWindowHint(GLFW_RESIZABLE, false);
 
+    // Get the video mode
+  //const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+
+    // Set window size to the size of the monitor
+// width= mode->width;
+//  height = mode->height;
+//  height *= .91;
+
+    // Create the window
     window = glfwCreateWindow(width, height, "Lights Out!", nullptr, nullptr);
+    if (!window) {
+        cout << "Failed to create GLFW window" << endl;
+        glfwTerminate();
+        return -1;
+    }
+
+    // Make the window context current
     glfwMakeContextCurrent(window);
-
-    /*
-     *
-     *
-     * int screenHeight = mode-> height;
-    screenHeight -= 300;
-    height = screenHeight;
-    width = screenHeight;
-
-    gameWidth = height*.9;
-    gameHeight = height*.9;
-
-    gameWindowPosX = height*.1;
-    gameWindowPosY = height*.1;
-
-    cout << "height:" <<height <<endl;
-    cout << "gameHeight:" <<gameHeight <<endl;
-    cout << "gameWindowPosX:" <<gameWindowPosX <<endl;
-     *
-     *
-     * */
-
-
 
     // glad: load all OpenGL function pointers
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -148,8 +168,9 @@ unsigned int Engine::initWindow(bool debug) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glfwSwapInterval(1);
 
+    // Set the initial screen
+    screen = start;
 
-    screen = play;
     return 0;
 }
 
@@ -171,6 +192,23 @@ void Engine::initShaders() {
 
 void Engine::initShapes() {
 
+   caveGeneration();
+
+    buttonWidth= width*.1;
+    buttonHeight= height*0.05;
+
+    vec2 buttonSize = {buttonWidth,buttonHeight};
+
+    vec2 startButtonPos = {width/2,height/2};
+    vec2 quitButtonPos = {width/2,height/2-200};
+    //start and quit buttons
+    startButton = make_unique<Rect>(shapeShader, vec2{width/2,height/2}, vec2{100, 50}, color{1, 0, 0, 1});
+
+    startButton = make_unique<Rect>(shapeShader, startButtonPos, buttonSize, color{1, 1, 1, 1});
+    quitButton = make_unique<Rect>(shapeShader, quitButtonPos, buttonSize, color{1, 1, 1, 1});
+
+
+
     //rectDimen = static_cast<float>(gameHeight) / gameDimensions;
     //vec2 squareSize = { rectDimen, rectDimen };
 
@@ -180,19 +218,19 @@ void Engine::initShapes() {
 
     // Loop through the maze and create Rect objects based on the maze configuration
     //for (int y = 0; y < gameDimensions * 2 - 1; ++y) {
-        //for (int x = 0; x < gameDimensions * 2 - 1; ++x) {
+    //for (int x = 0; x < gameDimensions * 2 - 1; ++x) {
 
-            // Set the position based on the grid and rectDimen
-            //vec2 position = {x * rectDimen, y * rectDimen};
-
-
-
-            // Set the color based on whether it's a wall or not
-            //color fill = maze[y][x].isWall() ? gray : yellow;
+    // Set the position based on the grid and rectDimen
+    //vec2 position = {x * rectDimen, y * rectDimen};
 
 
-            // Create a Rect object based on the position, size, and color
-            //maze[y].push_back(Rect(shapeShader, position, squareSize, yellow));
+
+    // Set the color based on whether it's a wall or not
+    //color fill = maze[y][x].isWall() ? gray : yellow;
+
+
+    // Create a Rect object based on the position, size, and color
+    //maze[y].push_back(Rect(shapeShader, position, squareSize, yellow));
 
 
 
@@ -201,14 +239,11 @@ void Engine::initShapes() {
 }
 
 void Engine::processInput() {
-    glfwPollEvents();
 
     glfwPollEvents();
     // Mouse position is inverted because the origin of the window is in the top left corner
-    bool mousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
-    //creates array of states and valid counter
-    bool RectStatus[25];
-    int valid = 0;
+    glfwGetCursorPos(window, &MouseX, &MouseY);
+
     // Set keys to true if pressed, false if released
     for (int key = 0; key < 1024; ++key) {
         if (glfwGetKey(window, key) == GLFW_PRESS)
@@ -216,14 +251,62 @@ void Engine::processInput() {
         else if (glfwGetKey(window, key) == GLFW_RELEASE)
             keys[key] = false;
     }
-// Close window if escape key is pressed
+
+    MouseY = height - MouseY; // Invert y-axis of mouse position
+
+
+    //cout <<"MouseX: "<< MouseX<< "MouseY: " << MouseY << endl;
+
+    if (screen == start) {
+        bool startButtonOverlapsMouse = startButton->isOverlapping(vec2(MouseX, MouseY));
+        bool quitButtonOverlapsMouse = quitButton->isOverlapping(vec2(MouseX, MouseY));
+
+        bool mousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+
+        if (startButtonOverlapsMouse) {
+            startButton->setColor(vec4(1.0f, 1.0f, 1.0f, 0.7f)); // Change color when hovering
+        } else {
+            startButton->setColor(vec4(1.0f, 1.0f, 1.0f, 1.0f)); // Reset color when not hovering
+        }
+        if (quitButtonOverlapsMouse) {
+            quitButton->setColor(vec4(1.0f, 1.0f, 1.0f, 0.7f)); // Change color when hovering
+        } else {
+            quitButton->setColor(vec4(1.0f, 1.0f, 1.0f, 1.0f)); // Reset color when not hovering
+        }
+        // When in play screen, if the button was released, then spawn confetti
+        if (mousePressed && startButtonOverlapsMouse) {
+            screen = play;
+        }
+        if (mousePressed && quitButtonOverlapsMouse) {
+            glfwSetWindowShouldClose(window, true);
+        }
+
+        //screen = play;
+        mousePressedLastFrame = mousePressed;
+
+    }
+
+
+
+
+
+
+    // Set keys to true if pressed, false if released
+    for (int key = 0; key < 1024; ++key) {
+        if (glfwGetKey(window, key) == GLFW_PRESS)
+            keys[key] = true;
+        else if (glfwGetKey(window, key) == GLFW_RELEASE)
+            keys[key] = false;
+    }
+    // Close window if escape key is pressed
     if (keys[GLFW_KEY_ESCAPE])
         glfwSetWindowShouldClose(window, true);
-// Mouse position saved to check for collisions
+
+    // Mouse position saved to check for collisions
     glfwGetCursorPos(window, &MouseX, &MouseY);
     MouseY = height - MouseY;
-// TODO: If we're in the start screen and the user presses s, change screen to play
-// Hint: The index is GLFW_KEY_S
+    // TODO: If we're in the start screen and the user presses s, change screen to play
+    // Hint: The index is GLFW_KEY_S
     if (keys[GLFW_KEY_S])
         screen = play;
 
@@ -250,26 +333,32 @@ void Engine::render() {
     // Render differently depending on screen
     switch (screen) {
         case start: {
-            string message = "Welcome to Lights out!";
-            string instructions = "Click each light";
-            string instructions1= "to turn them off";
-            string instructions2 = "Pres S to start!";
-            // (12 * message.length()) is the offset to center text.
-            // 12 pixels is the width of each character scaled by 1.
-            this->fontRenderer->renderText(message, 125 , 450, 1, vec3{1, 1, 1});
-            this->fontRenderer->renderText(instructions, 125 , 340, 1, vec3{1, 1, 1});
-            this->fontRenderer->renderText(instructions1, 125 , 300, 1, vec3{1, 1, 1});
-            this->fontRenderer->renderText(instructions2, 125 , 150, 1, vec3{1, 1, 1});
+            string startLabel = "Welcome to ScubaDiver";
+            string playLabel = "Play";
+            string quitLabel = "Quit";
+
+            startButton->setUniforms();
+            startButton->draw();
+            quitButton->setUniforms();
+            quitButton->draw();
+
+
+            this->fontRenderer->renderText(startLabel, 290,340, .5, vec3{1, 1, 1});
+
+
+            this->fontRenderer->renderText(playLabel,368,292,.7, vec3{0, 0, 0});
+            this->fontRenderer->renderText(quitLabel,368,232,.7, vec3{0, 0, 0});
+
             break;
         }
 
         case play: {
             //generateMaze
-            generateMaze();
 
             // Draw the maze
-            for (int y = 0; y < gameDimensions*2 - 1; ++y) {
-                for (int x = 0; x < gameDimensions*2 - 1; ++x) {
+
+            for (int y = 0; y < gameDimensions; ++y) {
+                for (int x = 0; x < gameDimensions; ++x) {
                     // Set the position based on the grid and rectDimen
                     vec2 position = {x * rectDimen, y * rectDimen};
 
@@ -277,15 +366,15 @@ void Engine::render() {
                     vec2 size = {rectDimen, rectDimen};
 
                     // Set the color based on whether it's a wall or not
-                    color fill = maze[y][x].isWall() ? gray : yellow;
-                    maze[y][x].setColor(fill);
-                    bool temp = maze[y][x].isWall();
-                    cout << "x:" << x << " y:"<< y << "isWall: " << temp << endl;
+                    color fill = map[y][x].isWall() ? gray : yellow;
+                    map[y][x].setColor(fill);
+                    //bool temp = map[y][x].isWall();
+                    //cout << "x:" << x << " y:"<< y << "isWall: " << temp << endl;
 
 
-                    //maze[y][x].setUniforms();
+                    map[y][x].setUniforms();
 
-                    //maze[y][x].draw();
+                    map[y][x].draw();
 
                 }
             }
