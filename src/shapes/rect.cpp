@@ -7,6 +7,7 @@ Rect::Rect(Shader & shader, vec2 pos, vec2 size, struct color color)
     initVAO();
     initVBO();
     initEBO();
+    state = 1;
 }
 
 Rect::Rect(Rect const& other) : Shape(other) {
@@ -14,6 +15,7 @@ Rect::Rect(Rect const& other) : Shape(other) {
     initVAO();
     initVBO();
     initEBO();
+    state = 1;
 }
 
 Rect::~Rect() {
@@ -50,9 +52,9 @@ float Rect::getBottom() const      { return pos.y - (size.y/2); /* placeholder f
 
 
 
-void Rect::setWall(bool wallIn){
-    wall = wallIn;
+void Rect::setWall(bool state){
+    this->state = state;
 }
 bool Rect::isWall(){
-    return wall;
+    return state;
 }

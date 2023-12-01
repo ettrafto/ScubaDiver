@@ -35,7 +35,7 @@ private:
     color transparent = color(1.0f,1.0f,1.0f,0.0f);
 
     /// @brief The width and height of the window.
-    int width = 2000, height = 2000; // Window dimensions
+    int width = 1800, height = 1800; // Window dimensions
 
     /// @brief Keyboard state (True if pressed, false if not pressed).
     /// @details Index this array with GLFW_KEY_{key} to get the state of a key.
@@ -86,6 +86,8 @@ private:
     float rectDimen;
 
     std::vector<std::vector<Rect>> map;
+
+
 
     // Function to generate the maze
     void addWalls(int x, int y, std::vector<std::pair<int, int>>& walls);

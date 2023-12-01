@@ -18,31 +18,137 @@ Engine::~Engine() {}
 
 void Engine::caveGeneration() {
 
+    // Define the size of the 2D array
+    const int rows = gameDimensions;
+    const int cols = gameDimensions;
+
+    // Create a 2D array filled with false
+    std::vector<std::vector<bool>> twoDArray(rows, std::vector<bool>(cols, false));
+
+    // Set the noise percentage
+    double noisePercent = 0.5;
+
+    // Randomly assign true or false to each element based on noisePercent
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            double randomValue = static_cast<double>(std::rand()) / RAND_MAX;  // Generate a random value between 0 and 1
+
+            // Set as true if the random value is less than noisePercent
+            twoDArray[i][j] = (randomValue < noisePercent);
+        }
+    }
+
+    // Output the 2D array
+    /*for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            std::cout << std::boolalpha << twoDArray[i][j] << " ";// 1
+        }
+        std::cout << std::endl;
+    }*/
+
+
 
     rectDimen = height / gameDimensions;
     vec2 squareSize = {rectDimen, rectDimen};
 
     // Initialize the map with all walls and create Rect objects
-
+    vector<Rect> row = {};
     for (int y = 0; y < gameDimensions; ++y) {
-        vector<Rect> rects = {};
+        row.clear();
         for (int x = 0; x < gameDimensions; ++x) {
             // Set the position based on the grid and rectDimen
             vec2 position = {x * rectDimen, y * rectDimen};
 
-            // Set the color based on whether it's a wall or not
-            color fill = gray; // Initially, set all rectangles to be walls
+            color fill = gray;
 
             // Create a Rect object based on the position, size, and color
-            rects.push_back(Rect(shapeShader, position, squareSize, fill));
-            rects[x].setWall(true);
+            Rect r = Rect(shapeShader, position, squareSize, fill);
 
+            //pushing rect onto row array
+            row.push_back(r);
+
+            /*if (twoDArray[x][y]){
+                row[x].setWall(1);
+            }else{
+                row[x].setWall(0);
+            }*/
+            row[x].setWall(1);
+        }
+
+        map.push_back(row);
+    }
+
+    for (int y = 0; y < map.size(); ++y) {
+        for (int x = 0; x < map[y].size(); ++x) {
+            //create a random noise grid
+            int noisePercent = .5;
+
+            /*
+            if ((rand() % 100) < noisePercent * 100) {
+                map[y][x].setWall(true); // Set as wall
+            } else {
+                map[y][x].setWall(false); // Not a wall
+            }
+            map[x][y].setWall(false);*/
+
+            cout <<map[y][x].isWall()<<" ";
+            // Set the color based on whether it's a wall or not
+            color fill = map[y][x].isWall() ? gray : yellow;
+            map[y][x].setColor(fill);
 
         }
-        map.push_back(rects);
+        cout<<endl;
     }
-}
 
+
+    /*
+    const int gameDimensions = 10; // Replace 10 with your desired dimensions
+
+    float rectDimen = height / gameDimensions;
+    vec2 squareSize = {rectDimen, rectDimen};
+
+// Initialize the map with all walls and create Rect objects
+
+
+    for (int y = 0; y < gameDimensions; ++y) {
+        for (int x = 0; x < gameDimensions; ++x) {
+            // Set the position based on the grid and rectDimen
+            vec2 position = {x * rectDimen, y * rectDimen};
+
+            color fill = gray;
+
+            // Create a Rect object based on the position, size, and color
+            map[y][x] = Rect(shapeShader, position, squareSize, fill);
+
+            //if (twoDArray[x][y]){
+            //    map[y][x].setWall(1);
+            //} else {
+            //    map[y][x].setWall(0);
+            //}
+        }
+    }
+
+    for (int y = 0; y < gameDimensions; ++y) {
+        for (int x = 0; x < gameDimensions; ++x) {
+            // create a random noise grid
+            int noisePercent = 50; // Replace 50 with your desired noise percentage
+
+            //if ((rand() % 100) < noisePercent) {
+            //    map[y][x].setWall(true); // Set as wall
+            //} else {
+            //    map[y][x].setWall(false); // Not a wall
+            //}
+            map[x][y].setWall(false);
+
+            cout << map[y][x].isWall() << " ";
+
+            // Set the color based on whether it's a wall or not
+            color fill = map[y][x].isWall() ? gray : yellow;
+            map[y][x].setColor(fill);
+        }
+        cout << endl;
+    }
+}*/
 
 
        /* // Initialize a list to store walls
@@ -119,7 +225,7 @@ void Engine::caveGeneration() {
             cout << iteration << endl;
             iteration = 1 + iteration;
         }*/
-   // }
+    }
 
 
 
@@ -137,13 +243,18 @@ unsigned int Engine::initWindow(bool debug) {
 #endif
     glfwWindowHint(GLFW_RESIZABLE, false);
 
+    /*
+    attempting to resize screen to display size, creates many coordinate problems
+
     // Get the video mode
-  //const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+    const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
     // Set window size to the size of the monitor
-// width= mode->width;
-//  height = mode->height;
-//  height *= .91;
+     width= mode->width;
+     height = mode->height;
+     height *= .91;
+
+    */
 
     // Create the window
     window = glfwCreateWindow(width, height, "Lights Out!", nullptr, nullptr);
@@ -192,55 +303,28 @@ void Engine::initShaders() {
 
 void Engine::initShapes() {
 
-   caveGeneration();
+    //generating map
+    caveGeneration();
 
+    //button size 10% of width, 5% of height
     buttonWidth= width*.1;
     buttonHeight= height*0.05;
-
     vec2 buttonSize = {buttonWidth,buttonHeight};
 
+    //button position = middle width, middle height (quit moved 200 below)
     vec2 startButtonPos = {width/2,height/2};
     vec2 quitButtonPos = {width/2,height/2-200};
-    //start and quit buttons
-    startButton = make_unique<Rect>(shapeShader, vec2{width/2,height/2}, vec2{100, 50}, color{1, 0, 0, 1});
 
+    //start and quit buttons
     startButton = make_unique<Rect>(shapeShader, startButtonPos, buttonSize, color{1, 1, 1, 1});
     quitButton = make_unique<Rect>(shapeShader, quitButtonPos, buttonSize, color{1, 1, 1, 1});
-
-
-
-    //rectDimen = static_cast<float>(gameHeight) / gameDimensions;
-    //vec2 squareSize = { rectDimen, rectDimen };
-
-    // Generate the maze using Prim's algorithm
-    //generateMaze();
-
-
-    // Loop through the maze and create Rect objects based on the maze configuration
-    //for (int y = 0; y < gameDimensions * 2 - 1; ++y) {
-    //for (int x = 0; x < gameDimensions * 2 - 1; ++x) {
-
-    // Set the position based on the grid and rectDimen
-    //vec2 position = {x * rectDimen, y * rectDimen};
-
-
-
-    // Set the color based on whether it's a wall or not
-    //color fill = maze[y][x].isWall() ? gray : yellow;
-
-
-    // Create a Rect object based on the position, size, and color
-    //maze[y].push_back(Rect(shapeShader, position, squareSize, yellow));
-
-
-
-
 
 }
 
 void Engine::processInput() {
 
     glfwPollEvents();
+
     // Mouse position is inverted because the origin of the window is in the top left corner
     glfwGetCursorPos(window, &MouseX, &MouseY);
 
@@ -252,12 +336,14 @@ void Engine::processInput() {
             keys[key] = false;
     }
 
-    MouseY = height - MouseY; // Invert y-axis of mouse position
+    // Invert y-axis of mouse position
+    MouseY = height - MouseY;
 
-
+    //debugging mouse cords
     //cout <<"MouseX: "<< MouseX<< "MouseY: " << MouseY << endl;
 
     if (screen == start) {
+
         bool startButtonOverlapsMouse = startButton->isOverlapping(vec2(MouseX, MouseY));
         bool quitButtonOverlapsMouse = quitButton->isOverlapping(vec2(MouseX, MouseY));
 
@@ -281,23 +367,10 @@ void Engine::processInput() {
             glfwSetWindowShouldClose(window, true);
         }
 
-        //screen = play;
         mousePressedLastFrame = mousePressed;
 
     }
 
-
-
-
-
-
-    // Set keys to true if pressed, false if released
-    for (int key = 0; key < 1024; ++key) {
-        if (glfwGetKey(window, key) == GLFW_PRESS)
-            keys[key] = true;
-        else if (glfwGetKey(window, key) == GLFW_RELEASE)
-            keys[key] = false;
-    }
     // Close window if escape key is pressed
     if (keys[GLFW_KEY_ESCAPE])
         glfwSetWindowShouldClose(window, true);
@@ -305,21 +378,19 @@ void Engine::processInput() {
     // Mouse position saved to check for collisions
     glfwGetCursorPos(window, &MouseX, &MouseY);
     MouseY = height - MouseY;
-    // TODO: If we're in the start screen and the user presses s, change screen to play
-    // Hint: The index is GLFW_KEY_S
-    if (keys[GLFW_KEY_S])
-        screen = play;
+
+
 
 
 }
 
 void Engine::update() {
+
     // Calculate delta time
     float currentFrame = glfwGetTime();
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
 
-    // TODO: End the game when there are no more light up squares
 
 }
 
@@ -333,19 +404,19 @@ void Engine::render() {
     // Render differently depending on screen
     switch (screen) {
         case start: {
+            //declaring strings to be displayed
             string startLabel = "Welcome to ScubaDiver";
             string playLabel = "Play";
             string quitLabel = "Quit";
 
+            //drawing start and quit buttons
             startButton->setUniforms();
             startButton->draw();
             quitButton->setUniforms();
             quitButton->draw();
 
-
+            //drawing text
             this->fontRenderer->renderText(startLabel, 290,340, .5, vec3{1, 1, 1});
-
-
             this->fontRenderer->renderText(playLabel,368,292,.7, vec3{0, 0, 0});
             this->fontRenderer->renderText(quitLabel,368,232,.7, vec3{0, 0, 0});
 
@@ -353,28 +424,30 @@ void Engine::render() {
         }
 
         case play: {
-            //generateMaze
+
 
             // Draw the maze
-
             for (int y = 0; y < gameDimensions; ++y) {
                 for (int x = 0; x < gameDimensions; ++x) {
-                    // Set the position based on the grid and rectDimen
-                    vec2 position = {x * rectDimen, y * rectDimen};
 
-                    // Set the size based on your requirements
-                    vec2 size = {rectDimen, rectDimen};
 
-                    // Set the color based on whether it's a wall or not
-                    color fill = map[y][x].isWall() ? gray : yellow;
+                    color fill = map[y][x].isWall() ? yellow: gray;
                     map[y][x].setColor(fill);
-                    //bool temp = map[y][x].isWall();
-                    //cout << "x:" << x << " y:"<< y << "isWall: " << temp << endl;
-
 
                     map[y][x].setUniforms();
-
                     map[y][x].draw();
+
+                    // Set the position based on the grid and rectDimen
+                    //vec2 position = {x * rectDimen, y * rectDimen};
+
+                    // Set the size based on your requirements
+                    //vec2 size = {rectDimen, rectDimen};
+
+                    // Set the color based on whether it's a wall or not
+                    //color fill = map[y][x].isWall() ? gray : yellow;
+                    //map[y][x].setColor(fill);
+                    //bool temp = map[y][x].isWall();
+                    //cout << "x:" << x << " y:"<< y << "isWall: " << temp << endl;
 
                 }
             }

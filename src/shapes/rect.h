@@ -6,12 +6,17 @@
 #include <iostream>
 using glm::vec2, glm::vec3;
 
+enum State{
+    WALL,
+    CAVE
+};
 
 class Rect : public Shape {
 private:
     /// @brief Initializes the vertices and indices of the square
     void initVectors();
-    bool wall = false;
+    bool state;
+
 public:
     /// @brief Construct a new Square object
     /// @details This constructor will call the InitRenderData function.
@@ -34,7 +39,7 @@ public:
     float getTop() const override;
     float getBottom() const override;
 
-    void setWall(bool wallIn);
+    void setWall(bool state);
     bool isWall();
 };
 
