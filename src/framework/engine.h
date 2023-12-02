@@ -56,13 +56,16 @@ private:
     //menu buttons
     int buttonWidth;
     int buttonHeight;
-
     unique_ptr<Shape> startButton;
     unique_ptr<Shape> quitButton;
 
     // Shapes
     std::vector<std::vector<Rect>> map;
     unique_ptr<Shape> player;
+
+    std::vector<std::unique_ptr<Rect>> treasure;
+
+//    std::vector<Rect> treasure;
 
     // Shaders
     Shader shapeShader;
@@ -74,6 +77,8 @@ private:
 
     //map-related members
     int gameDimensions = 100;
+    int numTreasure = 10;
+    std::vector<vec2> treasurePos;
     float rectDimen;
     vec2 playerStart;
 

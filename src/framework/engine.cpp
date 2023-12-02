@@ -123,7 +123,6 @@ void Engine::caveGeneration() {
             if (!map[y][x].isWall()) {
                 // Add non-wall positions to the vector
                 nonWallPositions.push_back(std::make_pair(x, y));
-                //cout<<x<<" "<<y<<endl;
             }
         }
     }
@@ -140,13 +139,25 @@ void Engine::caveGeneration() {
 
 
         // Set the player's start point
-
-
         playerStart = (vec2(startX * rectDimen + rectDimen / 2, startY * rectDimen + rectDimen / 2));
-        cout<<playerStart.x<<" "<<playerStart.y<<endl;
-        //player->setPos(playerStart);
-    }
+        //cout<<playerStart.x<<" "<<playerStart.y<<endl;
 
+    }
+    for (int i=0;i<numTreasure;i++){
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<size_t> dis(0, nonWallPositions.size() - 1);
+
+        size_t randomIndex = dis(gen);
+        int posX = nonWallPositions[randomIndex].first;
+        int posY = nonWallPositions[randomIndex].second;
+
+        cout<<posX<<posY<<endl;
+
+        vec2 treasurePosition{posX*rectDimen+rectDimen/2,posY*rectDimen+rectDimen/2};
+        treasurePos.push_back(treasurePosition);
+        cout<<treasurePosition.x<<treasurePosition.y<<endl;
+    }
 
 
 
@@ -368,9 +379,19 @@ void Engine::initShapes() {
     startButton = make_unique<Rect>(shapeShader, startButtonPos, buttonSize, color{1, 1, 1, 1});
     quitButton = make_unique<Rect>(shapeShader, quitButtonPos, buttonSize, color{1, 1, 1, 1});
 
-    //TODO: Set player to spawn in a non-wall space
+    //TODO: integrate drawing treasure
+   /* for (int i=0;i<numTreasure;i++){
+        vec2 pos = treasurePos[i];
 
+        Rect t = Rect(shapeShader, pos, vec2{rectDimen,rectDimen}, color{1, 1, 0, 1});
 
+        treasure.push_back(t);
+    }*/
+    for (int i = 0; i < numTreasure; i++) {
+        vec2 pos = treasurePos[i];
+        auto t = std::make_unique<Rect>(shapeShader, pos, vec2{rectDimen, rectDimen}, color{1, 1, 0, 1});
+        treasure.push_back(std::move(t));
+    }
 
     //creating player
     player = make_unique<Rect>(shapeShader, vec2{width/2,height/2}, vec2{rectDimen, rectDimen}, color{1, 0, 0, 1});
@@ -496,7 +517,36 @@ void Engine::update() {
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
 
+    // Assuming playerRadius and treasureRadius are defined appropriately
+    float playerRadius = player->getSize().x / 2.0f;
+    float treasureRadius = treasure[0]->getSize().x / 2.0f;
 
+    // Assuming there is a loop to iterate through treasure objects
+    for (int i = 0; i < treasure.size(); ++i) {
+        vec2 playerPos = player->getPos();
+        vec2 treasurePos = treasure[i]->getPos();
+
+        // Calculate the distance between the player and the treasure
+        float distance = glm::length(playerPos - treasurePos);
+
+        // Check for collision between player and treasure
+        if (distance < (playerRadius + treasureRadius)) {
+            // Player collected the treasure, so remove it
+            treasure.erase(treasure.begin() + i);
+            // Decrease the count of remaining treasures
+            numTreasure--;
+
+            // You can add additional logic here, such as updating the game state
+
+            // If all treasures are collected, you can change the screen state
+            if (numTreasure == 0) {
+                screen = over;
+            }
+
+            // Exit the loop since we don't need to check for further collisions in this frame
+            break;
+        }
+    }
 }
 
 void Engine::render() {
@@ -530,7 +580,6 @@ void Engine::render() {
 
         case play: {
 
-
             // Draw the map
             for (int y = 0; y < gameDimensions; ++y) {
                 for (int x = 0; x < gameDimensions; ++x) {
@@ -544,6 +593,15 @@ void Engine::render() {
 
                 }
             }
+
+            //draw treasure
+            for (int i=0;i<numTreasure;i++){
+
+
+                treasure[i]->setUniforms();
+                treasure[i]->draw();
+            }
+
             player->setUniforms();
             player->draw();
             break;
