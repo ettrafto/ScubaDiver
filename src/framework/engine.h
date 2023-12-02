@@ -32,6 +32,7 @@ private:
     color yellow = color{.9f, 0.8f, 0.0f, 1.0f};
     color gray = color{.7f, 0.7f, 0.7f, 1.0f};
     color red = color{1.0f,0.0f,0.0f,1.0f};
+    color black = color{0.0f,0.0f,0.0f,1.0f};
     color transparent = color(1.0f,1.0f,1.0f,0.0f);
 
     /// @brief The width and height of the window.
@@ -72,26 +73,16 @@ private:
     bool mousePressedLastFrame = false;
 
 
-
-    enum class Cell { Blocked, Passage };
-
-    struct Maze;
-
-    //maze-related members
-    int gameDimensions = 10;
-    int gameWidth = width * 0.9;
-    int gameHeight = height * 0.9;
-
-
+    //map-related members
+    int gameDimensions = 100;
     float rectDimen;
-
     std::vector<std::vector<Rect>> map;
 
 
-
     // Function to generate the maze
-    void addWalls(int x, int y, std::vector<std::pair<int, int>>& walls);
     void caveGeneration();
+    void smoothMap();
+    int getSurroundingWallCount(int wallX, int wallY);
 
 
 

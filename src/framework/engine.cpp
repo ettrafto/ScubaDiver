@@ -16,38 +16,44 @@ Engine::Engine() : keys() {
 
 Engine::~Engine() {}
 
-void Engine::caveGeneration() {
+int Engine::getSurroundingWallCount(int wallX, int wallY) {
+    int count = 0;
 
-    // Define the size of the 2D array
-    const int rows = gameDimensions;
-    const int cols = gameDimensions;
+    for (int neighborX = wallX-1; neighborX <= wallX+1; neighborX++) {
+        for (int neighborY = wallY-1; neighborY <= wallY+1; neighborY++) {
+            if(neighborX >= 0 && neighborX < gameDimensions && neighborX >= 0 && neighborX < gameDimensions){
+                if(neighborX != wallX || neighborY != wallY){
+                    if (map[neighborX][neighborY].isWall()){
+                        count++;
+                    }
+                }
+            }else{
+                count++;
+            }
+        }
+    }
+    return count;
+}
 
-    // Create a 2D array filled with false
-    std::vector<std::vector<bool>> twoDArray(rows, std::vector<bool>(cols, false));
+void Engine::smoothMap() {
+    for (int y = 0; y < map.size(); ++y) {
+        for (int x = 0; x < map[y].size(); ++x) {
+            int neighborWalls = getSurroundingWallCount(x,y);
+            if (neighborWalls > 4){
+                map[x][y].setWall(true);
+            }else if(neighborWalls < 4){
+                map[x][y].setWall(false);
+            }
 
-    // Set the noise percentage
-    double noisePercent = 0.5;
-
-    // Randomly assign true or false to each element based on noisePercent
-    for (int i = 0; i < rows; ++i) {
-        for (int j = 0; j < cols; ++j) {
-            double randomValue = static_cast<double>(std::rand()) / RAND_MAX;  // Generate a random value between 0 and 1
-
-            // Set as true if the random value is less than noisePercent
-            twoDArray[i][j] = (randomValue < noisePercent);
         }
     }
 
-    // Output the 2D array
-    /*for (int i = 0; i < rows; ++i) {
-        for (int j = 0; j < cols; ++j) {
-            std::cout << std::boolalpha << twoDArray[i][j] << " ";// 1
-        }
-        std::cout << std::endl;
-    }*/
+}
 
 
+void Engine::caveGeneration() {
 
+    //setting size of singular rectangle
     rectDimen = height / gameDimensions;
     vec2 squareSize = {rectDimen, rectDimen};
 
@@ -56,50 +62,59 @@ void Engine::caveGeneration() {
     for (int y = 0; y < gameDimensions; ++y) {
         row.clear();
         for (int x = 0; x < gameDimensions; ++x) {
-            // Set the position based on the grid and rectDimen
-            vec2 position = {x * rectDimen, y * rectDimen};
 
-            color fill = gray;
+            // Set the position based on the grid and rectDimen
+            vec2 position = {x * rectDimen+rectDimen/2, y * rectDimen+rectDimen/2};
+
 
             // Create a Rect object based on the position, size, and color
-            Rect r = Rect(shapeShader, position, squareSize, fill);
+            Rect r = Rect(shapeShader, position, squareSize, black);
 
             //pushing rect onto row array
             row.push_back(r);
 
-            /*if (twoDArray[x][y]){
-                row[x].setWall(1);
-            }else{
-                row[x].setWall(0);
-            }*/
-            row[x].setWall(1);
         }
-
+        //adding rows to 2d vec
         map.push_back(row);
     }
+
+    //creating and defining random device
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<double> dis(0.0, 1.0);
+
 
     for (int y = 0; y < map.size(); ++y) {
         for (int x = 0; x < map[y].size(); ++x) {
             //create a random noise grid
-            int noisePercent = .5;
 
-            /*
-            if ((rand() % 100) < noisePercent * 100) {
-                map[y][x].setWall(true); // Set as wall
+            double randomValue = dis(gen);
+
+            int noisePercent = 47;
+
+            if (randomValue < noisePercent / 100.0) {
+                // Set as wall
+                map[y][x].setWall(true);
             } else {
-                map[y][x].setWall(false); // Not a wall
+                // Not a wall
+                map[y][x].setWall(false);
             }
-            map[x][y].setWall(false);*/
-
-            cout <<map[y][x].isWall()<<" ";
-            // Set the color based on whether it's a wall or not
-            color fill = map[y][x].isWall() ? gray : yellow;
-            map[y][x].setColor(fill);
 
         }
-        cout<<endl;
     }
 
+    //NOISE GRID GENERATED
+    for (int i=0;i<5;i++){
+        smoothMap();
+    }
+    //set borders to walls
+    for (int y = 0; y < map.size(); ++y) {
+        for (int x = 0; x < map[y].size(); ++x) {
+            if(x==0||x==gameDimensions-1||y==0||y==gameDimensions-1) {
+                map[y][x].setWall(true);
+            }
+        }
+    }
 
     /*
     const int gameDimensions = 10; // Replace 10 with your desired dimensions
@@ -431,23 +446,11 @@ void Engine::render() {
                 for (int x = 0; x < gameDimensions; ++x) {
 
 
-                    color fill = map[y][x].isWall() ? yellow: gray;
+                    color fill = map[y][x].isWall() ? black: gray;
                     map[y][x].setColor(fill);
 
                     map[y][x].setUniforms();
                     map[y][x].draw();
-
-                    // Set the position based on the grid and rectDimen
-                    //vec2 position = {x * rectDimen, y * rectDimen};
-
-                    // Set the size based on your requirements
-                    //vec2 size = {rectDimen, rectDimen};
-
-                    // Set the color based on whether it's a wall or not
-                    //color fill = map[y][x].isWall() ? gray : yellow;
-                    //map[y][x].setColor(fill);
-                    //bool temp = map[y][x].isWall();
-                    //cout << "x:" << x << " y:"<< y << "isWall: " << temp << endl;
 
                 }
             }
