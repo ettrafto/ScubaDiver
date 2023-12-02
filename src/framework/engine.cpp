@@ -115,6 +115,40 @@ void Engine::caveGeneration() {
             }
         }
     }
+    std::vector<std::pair<int, int>> nonWallPositions;
+    for (int y = 0; y < map.size(); ++y) {
+        for (int x = 0; x < map[y].size(); ++x) {
+            // ... Existing code ...
+
+            if (!map[y][x].isWall()) {
+                // Add non-wall positions to the vector
+                nonWallPositions.push_back(std::make_pair(x, y));
+                //cout<<x<<" "<<y<<endl;
+            }
+        }
+    }
+
+    //setting user to a random startpoint that is not a wall
+    if (!nonWallPositions.empty()) {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<size_t> dis(0, nonWallPositions.size() - 1);
+
+        size_t randomIndex = dis(gen);
+        int startX = nonWallPositions[randomIndex].first;
+        int startY = nonWallPositions[randomIndex].second;
+
+
+        // Set the player's start point
+
+
+        playerStart = (vec2(startX * rectDimen + rectDimen / 2, startY * rectDimen + rectDimen / 2));
+        cout<<playerStart.x<<" "<<playerStart.y<<endl;
+        //player->setPos(playerStart);
+    }
+
+
+
 
     /*
     const int gameDimensions = 10; // Replace 10 with your desired dimensions
@@ -334,6 +368,11 @@ void Engine::initShapes() {
     startButton = make_unique<Rect>(shapeShader, startButtonPos, buttonSize, color{1, 1, 1, 1});
     quitButton = make_unique<Rect>(shapeShader, quitButtonPos, buttonSize, color{1, 1, 1, 1});
 
+    //TODO: Set player to spawn in a non-wall space
+
+    //creating player
+    player = make_unique<Rect>(shapeShader, vec2{width/2,height/2}, vec2{rectDimen, rectDimen}, color{1, 0, 0, 1});
+
 }
 
 void Engine::processInput() {
@@ -384,6 +423,55 @@ void Engine::processInput() {
 
         mousePressedLastFrame = mousePressed;
 
+    }
+    if (screen == play) {
+
+        //setting player to playerStartPos
+        player->setPos(playerStart);
+
+        vec2 newPosition = player->getPos();
+        float buttonWidth = player->getSize().x;
+        float buttonHeight = player->getSize().y;
+
+/*
+        if(!map[newPosition.y+2.0f][newPosition.x+2.0f].isWall()){
+            newPosition.y += 2.0f;
+        }
+*/
+        //pressing the shift button doubles speed
+        if (keys[GLFW_KEY_UP] && newPosition.y + buttonHeight / 2.0f + 1.0f <= height) {
+            if (keys[GLFW_KEY_LEFT_SHIFT]){
+                newPosition.y += 2.0f;
+            }else {
+                newPosition.y += 1.0f;
+            }
+        }
+
+        if (keys[GLFW_KEY_DOWN] && newPosition.y - buttonHeight / 2.0f - 1.0f >= 0) {
+            if (keys[GLFW_KEY_LEFT_SHIFT]){
+                newPosition.y -= 2.0f;
+            }else {
+                newPosition.y -= 1.0f;
+            }
+        }
+
+        if (keys[GLFW_KEY_LEFT] && newPosition.x - buttonWidth / 2.0f - 1.0f >= 0) {
+            if (keys[GLFW_KEY_LEFT_SHIFT]){
+                newPosition.x -= 2.0f;
+            }else {
+                newPosition.x -= 1.0f;
+            }
+        }
+
+        if (keys[GLFW_KEY_RIGHT] && newPosition.x + buttonWidth / 2.0f + 1.0f <= width) {
+            if (keys[GLFW_KEY_LEFT_SHIFT]){
+                newPosition.x += 2.0f;
+            }else {
+                newPosition.x += 1.0f;
+            }
+        }
+
+        player->setPos(newPosition);
     }
 
     // Close window if escape key is pressed
@@ -441,7 +529,7 @@ void Engine::render() {
         case play: {
 
 
-            // Draw the maze
+            // Draw the map
             for (int y = 0; y < gameDimensions; ++y) {
                 for (int x = 0; x < gameDimensions; ++x) {
 
@@ -454,6 +542,8 @@ void Engine::render() {
 
                 }
             }
+            player->setUniforms();
+            player->draw();
             break;
         }
 

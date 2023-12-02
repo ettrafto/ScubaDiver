@@ -17,6 +17,8 @@
 #include <thread>
 #include <algorithm>
 
+#include "player.h"
+
 
 
 using std::vector, std::unique_ptr, std::make_unique, glm::ortho, glm::mat4, glm::vec3, glm::vec4;
@@ -58,12 +60,9 @@ private:
     unique_ptr<Shape> startButton;
     unique_ptr<Shape> quitButton;
 
-
-
     // Shapes
-    vector <unique_ptr<Rect>> squares;
-    vector <unique_ptr<Rect>> outlineFill;
-    vector <unique_ptr<Rect>> outline;
+    std::vector<std::vector<Rect>> map;
+    unique_ptr<Shape> player;
 
     // Shaders
     Shader shapeShader;
@@ -76,8 +75,7 @@ private:
     //map-related members
     int gameDimensions = 100;
     float rectDimen;
-    std::vector<std::vector<Rect>> map;
-
+    vec2 playerStart;
 
     // Function to generate the maze
     void caveGeneration();

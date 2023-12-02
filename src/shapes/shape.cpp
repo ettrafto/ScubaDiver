@@ -63,8 +63,10 @@ bool Shape::isOverlapping(const vec2 &point) const {
         return true; // The point is within the bounding box
     }
 
+
     return false; // The point is outside the bounding box
 }
+
 
 // Setters
 void Shape::move(vec2 offset)         { pos += offset; }
