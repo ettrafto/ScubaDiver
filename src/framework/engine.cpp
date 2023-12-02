@@ -1,4 +1,5 @@
 
+#include <iomanip>
 #include "engine.h"
 
 enum state {start,gameMenu,pause, play, over};
@@ -340,7 +341,7 @@ unsigned int Engine::initWindow(bool debug) {
     glfwSwapInterval(1);
 
     // Set the initial screen
-    screen = start;
+    screen = play;
 
     return 0;
 }
@@ -379,14 +380,7 @@ void Engine::initShapes() {
     startButton = make_unique<Rect>(shapeShader, startButtonPos, buttonSize, color{1, 1, 1, 1});
     quitButton = make_unique<Rect>(shapeShader, quitButtonPos, buttonSize, color{1, 1, 1, 1});
 
-    //TODO: integrate drawing treasure
-   /* for (int i=0;i<numTreasure;i++){
-        vec2 pos = treasurePos[i];
-
-        Rect t = Rect(shapeShader, pos, vec2{rectDimen,rectDimen}, color{1, 1, 0, 1});
-
-        treasure.push_back(t);
-    }*/
+    //creating treasure rects
     for (int i = 0; i < numTreasure; i++) {
         vec2 pos = treasurePos[i];
         auto t = std::make_unique<Rect>(shapeShader, pos, vec2{rectDimen, rectDimen}, color{1, 1, 0, 1});
@@ -397,6 +391,22 @@ void Engine::initShapes() {
     player = make_unique<Rect>(shapeShader, vec2{width/2,height/2}, vec2{rectDimen, rectDimen}, color{1, 0, 0, 1});
     //setting player to playerStartPos
     player->setPos(playerStart);
+
+
+    //creating game menu
+
+    float menuWidth = width* 0.15;
+    float menuHeight = height * 0.088;
+
+    float menuX = width-menuWidth/2;
+            //width - menuWidth;
+    float menuY = height-menuHeight/2;
+
+    vec2 menuPos = {menuX,menuY};
+    vec2 menuSize = {menuWidth,menuHeight};
+
+    gameMenu = make_unique<Rect>(shapeShader, menuPos, menuSize, color{1, 1, 1, .95});
+
 }
 
 void Engine::processInput() {
@@ -517,6 +527,37 @@ void Engine::update() {
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
 
+    //used to display time
+    totalTime += deltaTime;
+
+    // Get the player's movement speed
+    float movementSpeed = keys[GLFW_KEY_LEFT_SHIFT] ? 2.0f : 1.0f;
+
+    // Define O2 decrease rates based on movement speed
+    float o2DecreaseRate = 0.0f;
+    if (movementSpeed == 0.0f) {
+        // If not moving
+        o2DecreaseRate = 0.05f;
+    } else if (movementSpeed == 1.0f) {
+        // If moving at a speed of 1.0f
+        o2DecreaseRate = 0.1f;
+    } else if (movementSpeed == 2.0f) {
+        // If moving at a speed of 2.0f
+        o2DecreaseRate = 0.3f;
+    }
+
+    // Decrease O2 based on the defined rate
+    O2 -= o2DecreaseRate * deltaTime;
+
+    // Check if O2 is less than or equal to 0
+    if (O2 <= 0.0f) {
+        // Handle game over condition
+        screen = over;
+    }
+
+
+
+
     // Assuming playerRadius and treasureRadius are defined appropriately
     float playerRadius = player->getSize().x / 2.0f;
     float treasureRadius = treasure[0]->getSize().x / 2.0f;
@@ -531,19 +572,16 @@ void Engine::update() {
 
         // Check for collision between player and treasure
         if (distance < (playerRadius + treasureRadius)) {
+
             // Player collected the treasure, so remove it
             treasure.erase(treasure.begin() + i);
+
             // Decrease the count of remaining treasures
             numTreasure--;
 
-            // You can add additional logic here, such as updating the game state
+            //removing a treasure adds a point
+            points++;
 
-            // If all treasures are collected, you can change the screen state
-            if (numTreasure == 0) {
-                screen = over;
-            }
-
-            // Exit the loop since we don't need to check for further collisions in this frame
             break;
         }
     }
@@ -602,12 +640,44 @@ void Engine::render() {
                 treasure[i]->draw();
             }
 
+            //draw player
             player->setUniforms();
             player->draw();
+
+
+            //drawing menu
+            gameMenu->setUniforms();
+            gameMenu->draw();
+
+            // Convert totalTime to minutes and seconds
+            int minutes = static_cast<int>(totalTime) / 60;
+            int seconds = static_cast<int>(totalTime) % 60;
+
+            string pointsLabel = "Points: " + std::to_string(points);
+
+            // Ensure O2 is not less than 0
+            O2 = std::max(O2, 0.0f);
+
+            // Calculate the percentage of O2 relative to totalO2
+            float o2Percentage = (O2 / startO2) * 100.0f;
+
+            // Convert o2Percentage to a string with 1 decimal point and concatenate with the label
+            std::ostringstream o2Stream;
+            o2Stream << std::fixed << std::setprecision(1) << o2Percentage;
+            string o2Label = "O2: " + o2Stream.str() + "%";
+
+            string timeLabel = "Time: " + std::to_string(minutes) + "m " + std::to_string(seconds) + "s";
+
+            this->fontRenderer->renderText(pointsLabel, 690,585, .35, vec3{0, 0, 0});
+            this->fontRenderer->renderText(o2Label,690,570,.35, vec3{0, 0, 0});
+            this->fontRenderer->renderText(timeLabel,690,555,.35, vec3{0, 0, 0});
+
+
             break;
         }
 
         case over: {
+            //TODO: CREATE END GAME MENU
             string message = "You win!";
             break;
         }

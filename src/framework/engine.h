@@ -62,10 +62,12 @@ private:
     // Shapes
     std::vector<std::vector<Rect>> map;
     unique_ptr<Shape> player;
-
     std::vector<std::unique_ptr<Rect>> treasure;
+    unique_ptr<Shape> gameMenu;
 
-//    std::vector<Rect> treasure;
+
+
+
 
     // Shaders
     Shader shapeShader;
@@ -77,10 +79,18 @@ private:
 
     //map-related members
     int gameDimensions = 100;
-    int numTreasure = 10;
-    std::vector<vec2> treasurePos;
     float rectDimen;
     vec2 playerStart;
+
+    //treasure related members
+    int numTreasure = 10;
+    std::vector<vec2> treasurePos;
+
+    //game fields
+    int points=0;
+    float totalTime = 0.0f;
+    float startO2 = 70.0;
+    float O2 = 70.0;
 
     // Function to generate the maze
     void caveGeneration();
