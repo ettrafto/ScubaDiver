@@ -370,9 +370,12 @@ void Engine::initShapes() {
 
     //TODO: Set player to spawn in a non-wall space
 
+
+
     //creating player
     player = make_unique<Rect>(shapeShader, vec2{width/2,height/2}, vec2{rectDimen, rectDimen}, color{1, 0, 0, 1});
-
+    //setting player to playerStartPos
+    player->setPos(playerStart);
 }
 
 void Engine::processInput() {
@@ -426,8 +429,7 @@ void Engine::processInput() {
     }
     if (screen == play) {
 
-        //setting player to playerStartPos
-        player->setPos(playerStart);
+
 
         vec2 newPosition = player->getPos();
         float buttonWidth = player->getSize().x;
