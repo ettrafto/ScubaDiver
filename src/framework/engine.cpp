@@ -2,7 +2,7 @@
 #include <iomanip>
 #include "engine.h"
 
-enum state {start,gameMenu,pause, play, over};
+enum state {start,test,gameMenu,pause, play, over};
 state screen;
 
 // Colors
@@ -16,6 +16,89 @@ Engine::Engine() : keys() {
 }
 
 Engine::~Engine() {}
+
+bool Engine::pix2Rect(int x, int y) {
+    int newX = x/rectDimen;
+    int newY = y/rectDimen;
+
+    return map[newY][newX].isWall();
+}
+bool Engine::ifValidMove(int dir, bool speed){
+
+    float playerX = player->getPosX();
+    float playerY = player->getPosY();
+
+    float speedOut;
+    if(speed){
+        speedOut = 2.0f;
+    }else{
+        speedOut = 1.0f;
+    }
+
+
+    if(dir==1) {
+        cout<<pix2Rect(playerX, playerY + (speedOut))<<endl;
+
+        cout<<playerX<<" "<<playerY<<endl;
+        if (pix2Rect(playerX, playerY + (speedOut))) {
+            //cout<<pix2Rect(playerX, playerY + (speedOut * 2))<<endl;
+
+            return false;
+        }
+    }
+    if(dir==-1) {
+        if (pix2Rect(playerX, playerY - (speedOut))) {
+            return false;
+        }
+    }
+    if(dir==2) {
+        if (pix2Rect(playerX + (speedOut), playerY )) {
+            return false;
+        }
+    }
+    if(dir==-2) {
+        if (pix2Rect(playerX - (speedOut), playerY )) {
+            return false;
+        }
+    }
+    return true;
+
+/*        bool wallState = pix2Rect(playerX,playerY+speedOut).isWall();
+        playerY + 1.0f;
+        playerX + speedOut ;
+        if(){
+            cout<<"Y: "<<playerMoveY<<" X: "<<playerMoveX<<endl;
+            return false;
+        }else{
+            return true;
+        }
+
+    }
+    if(dir==-1){
+        playerMoveY - speedOut;
+        if(map[playerMoveY][playerMoveX].isWall()){
+            return false;
+        }else{
+            return true;
+        }
+    }
+    if(dir==2){
+        playerMoveX + speedOut;
+        if(map[playerMoveY][playerMoveX].isWall()){
+            return false;
+        }else{
+            return true;
+        }
+    }
+    if(dir==-2){
+        playerMoveX - speedOut;
+        if(map[playerMoveY][playerMoveX].isWall()){
+            return false;
+        }else{
+            return true;
+        }
+    }*/
+}
 
 int Engine::getSurroundingWallCount(int wallX, int wallY) {
     int count = 0;
@@ -117,13 +200,15 @@ void Engine::caveGeneration() {
         }
     }
     std::vector<std::pair<int, int>> nonWallPositions;
+
     for (int y = 0; y < map.size(); ++y) {
         for (int x = 0; x < map[y].size(); ++x) {
-            // ... Existing code ...
 
             if (!map[y][x].isWall()) {
                 // Add non-wall positions to the vector
                 nonWallPositions.push_back(std::make_pair(x, y));
+            }else{
+                wallPositions.push_back(std::make_pair(x,y));
             }
         }
     }
@@ -153,143 +238,13 @@ void Engine::caveGeneration() {
         int posX = nonWallPositions[randomIndex].first;
         int posY = nonWallPositions[randomIndex].second;
 
-        cout<<posX<<posY<<endl;
+        //cout<<posX<<posY<<endl;
 
         vec2 treasurePosition{posX*rectDimen+rectDimen/2,posY*rectDimen+rectDimen/2};
         treasurePos.push_back(treasurePosition);
-        cout<<treasurePosition.x<<treasurePosition.y<<endl;
     }
 
-
-
-    /*
-    const int gameDimensions = 10; // Replace 10 with your desired dimensions
-
-    float rectDimen = height / gameDimensions;
-    vec2 squareSize = {rectDimen, rectDimen};
-
-// Initialize the map with all walls and create Rect objects
-
-
-    for (int y = 0; y < gameDimensions; ++y) {
-        for (int x = 0; x < gameDimensions; ++x) {
-            // Set the position based on the grid and rectDimen
-            vec2 position = {x * rectDimen, y * rectDimen};
-
-            color fill = gray;
-
-            // Create a Rect object based on the position, size, and color
-            map[y][x] = Rect(shapeShader, position, squareSize, fill);
-
-            //if (twoDArray[x][y]){
-            //    map[y][x].setWall(1);
-            //} else {
-            //    map[y][x].setWall(0);
-            //}
-        }
-    }
-
-    for (int y = 0; y < gameDimensions; ++y) {
-        for (int x = 0; x < gameDimensions; ++x) {
-            // create a random noise grid
-            int noisePercent = 50; // Replace 50 with your desired noise percentage
-
-            //if ((rand() % 100) < noisePercent) {
-            //    map[y][x].setWall(true); // Set as wall
-            //} else {
-            //    map[y][x].setWall(false); // Not a wall
-            //}
-            map[x][y].setWall(false);
-
-            cout << map[y][x].isWall() << " ";
-
-            // Set the color based on whether it's a wall or not
-            color fill = map[y][x].isWall() ? gray : yellow;
-            map[y][x].setColor(fill);
-        }
-        cout << endl;
-    }
-}*/
-
-
-       /* // Initialize a list to store walls
-        std::vector<std::pair<int, int>> walls;
-
-        // Start from a random point
-        int startX = rand() % gameDimensions;
-        int startY = rand() % gameDimensions;
-
-        // Mark the starting point as part of the maze
-        maze[startY * 2][startX * 2].setWall(false);
-
-        // Add neighboring walls to the list
-        addWalls(startX * 2, startY * 2, walls);
-
-        int iteration = 0;
-        while (!walls.empty()) {
-            // Randomly select a wall from the list
-            int randomIndex = rand() % walls.size();
-            auto randomWall = walls[randomIndex];
-            int wallX = randomWall.first;
-            int wallY = randomWall.second;
-
-            cout << "WallX:" << wallX << " wallY: " << wallY << endl;
-
-            // Find the adjacent cell
-            int adjX, adjY;
-
-            if (wallX % 2 == 0) {
-                // Vertical wall edge
-                adjX = wallX;
-                adjY = wallY - 1;
-                // Ensure adjY is within bounds
-                if (adjY < 0) {
-                    adjY = 0; // Adjust to the minimum valid index
-                }
-            } else {
-                // Horizontal wall edge
-                adjX = wallX - 1;
-                adjY = wallY;
-                // Ensure adjX is within bounds
-                if (adjX < 0) {
-                    adjX = 0; // Adjust to the minimum valid index
-                }
-            }
-
-            // Now, you may also want to check the upper bounds of adjX and adjY
-            // Assuming gameDimensions is the maximum valid index
-            if (adjX >= gameDimensions * 2 - 1) {
-                adjX = gameDimensions * 2 - 2; // Adjust to the maximum valid index
-            }
-
-            if (adjY >= gameDimensions * 2 - 1) {
-                adjY = gameDimensions * 2 - 2; // Adjust to the maximum valid index
-            }
-
-            cout << "AdjX:" << adjX << " AdjY: " << adjY << endl;
-
-            // Check if the adjacent cell is not part of the maze
-            if (maze[adjY][adjX].isWall()) {
-                // Connect the wall to the maze
-                maze[wallY][wallX].setWall(false);
-
-                // Mark the adjacent cell as part of the maze
-                maze[adjY][adjX].setWall(false);
-
-                // Add neighboring walls to the list
-                addWalls(wallX, wallY, walls);
-            }
-
-            // Remove the selected wall from the list
-            walls.erase(walls.begin() + randomIndex);
-
-            cout << iteration << endl;
-            iteration = 1 + iteration;
-        }*/
-    }
-
-
-
+}
 
 unsigned int Engine::initWindow(bool debug) {
     // glfw: initialize and configure
@@ -314,11 +269,10 @@ unsigned int Engine::initWindow(bool debug) {
      width= mode->width;
      height = mode->height;
      height *= .91;
-
     */
 
     // Create the window
-    window = glfwCreateWindow(width, height, "Lights Out!", nullptr, nullptr);
+    window = glfwCreateWindow(width, height, "ScubaDiver", nullptr, nullptr);
     if (!window) {
         cout << "Failed to create GLFW window" << endl;
         glfwTerminate();
@@ -341,7 +295,7 @@ unsigned int Engine::initWindow(bool debug) {
     glfwSwapInterval(1);
 
     // Set the initial screen
-    screen = play;
+    screen = start;
 
     return 0;
 }
@@ -389,23 +343,29 @@ void Engine::initShapes() {
 
     //creating player
     player = make_unique<Rect>(shapeShader, vec2{width/2,height/2}, vec2{rectDimen, rectDimen}, color{1, 0, 0, 1});
+
     //setting player to playerStartPos
     player->setPos(playerStart);
 
+    background = make_unique<Rect>(shapeShader, vec2{width/2,height/2},vec2{width,height}, gray);
+
 
     //creating game menu
-
     float menuWidth = width* 0.15;
     float menuHeight = height * 0.088;
 
     float menuX = width-menuWidth/2;
-            //width - menuWidth;
     float menuY = height-menuHeight/2;
 
     vec2 menuPos = {menuX,menuY};
     vec2 menuSize = {menuWidth,menuHeight};
 
     gameMenu = make_unique<Rect>(shapeShader, menuPos, menuSize, color{1, 1, 1, .95});
+
+
+    //testing screen
+    //testRect = make_unique<Rect>(shapeShader,vec2{width/2,height/2}, vec2{rectDimen, rectDimen}, color{0, 1, 1, 1});
+
 
 }
 
@@ -426,9 +386,6 @@ void Engine::processInput() {
 
     // Invert y-axis of mouse position
     MouseY = height - MouseY;
-
-    //debugging mouse cords
-    //cout <<"MouseX: "<< MouseX<< "MouseY: " << MouseY << endl;
 
     if (screen == start) {
 
@@ -462,47 +419,91 @@ void Engine::processInput() {
 
 
 
-        vec2 newPosition = player->getPos();
+        vec2 position = player->getPos();
+        vec2 newPosition =  player->getPos();;
+
         float buttonWidth = player->getSize().x;
         float buttonHeight = player->getSize().y;
-
 /*
+        // Check if the point is within the bounding box of the shape
+        float left = getLeft();
+        float right = getRight();
+        float top = getTop();
+        float bottom = getBottom();
+
+        // Check if the point's coordinates are within the bounding box
+        if (point.x >= left && point.x <= right && point.y >= bottom && point.y <= top) {
+            return true; // The point is within the bounding box
+        }
+
+
+        return false; // The point is outside the bounding box
+        */
+/*
+ * if you would be overlapping you cannot move in that direction
+ *
         if(!map[newPosition.y+2.0f][newPosition.x+2.0f].isWall()){
             newPosition.y += 2.0f;
+        }*/
+/*
+    for (const unique_ptr<Rect>& r : buildings1) {
+        if (r->isOverlapping(*user)) {
+            r->setColor(orange);
+        } else {
+            r->setColor(brickRed);
         }
+    }
 */
+//get x,y of user ->
         //pressing the shift button doubles speed
         if (keys[GLFW_KEY_UP] && newPosition.y + buttonHeight / 2.0f + 1.0f <= height) {
             if (keys[GLFW_KEY_LEFT_SHIFT]){
-                newPosition.y += 2.0f;
+                if(ifValidMove(1,true)) {
+                    newPosition.y += 2.0f;
+                }
             }else {
-                newPosition.y += 1.0f;
+                if(ifValidMove(1,false)) {
+                    newPosition.y += 1.0f;
+                }
             }
         }
 
         if (keys[GLFW_KEY_DOWN] && newPosition.y - buttonHeight / 2.0f - 1.0f >= 0) {
             if (keys[GLFW_KEY_LEFT_SHIFT]){
-                newPosition.y -= 2.0f;
+                if(ifValidMove(-1,true)) {
+                    newPosition.y -= 2.0f;
+                }
             }else {
-                newPosition.y -= 1.0f;
+                if(ifValidMove(-1,false)) {
+                    newPosition.y -= 1.0f;
+                }
             }
         }
 
         if (keys[GLFW_KEY_LEFT] && newPosition.x - buttonWidth / 2.0f - 1.0f >= 0) {
             if (keys[GLFW_KEY_LEFT_SHIFT]){
-                newPosition.x -= 2.0f;
+                if(ifValidMove(-2,true)) {
+                    newPosition.x -= 2.0f;
+                }
             }else {
-                newPosition.x -= 1.0f;
+                if(ifValidMove(-2,false)) {
+                    newPosition.x -= 1.0f;
+                }
             }
         }
 
         if (keys[GLFW_KEY_RIGHT] && newPosition.x + buttonWidth / 2.0f + 1.0f <= width) {
             if (keys[GLFW_KEY_LEFT_SHIFT]){
-                newPosition.x += 2.0f;
+                if(ifValidMove(2,true)) {
+                    newPosition.x += 2.0f;
+                }
             }else {
-                newPosition.x += 1.0f;
+                if(ifValidMove(2,false)) {
+                    newPosition.x += 1.0f;
+                }
             }
         }
+
 
         player->setPos(newPosition);
     }
@@ -528,8 +529,9 @@ void Engine::update() {
     lastFrame = currentFrame;
 
     //used to display time
-    totalTime += deltaTime;
-
+    if(screen==play) {
+        totalTime += deltaTime;
+    }
     // Get the player's movement speed
     float movementSpeed = keys[GLFW_KEY_LEFT_SHIFT] ? 2.0f : 1.0f;
 
@@ -547,12 +549,14 @@ void Engine::update() {
     }
 
     // Decrease O2 based on the defined rate
-    O2 -= o2DecreaseRate * deltaTime;
-
+    if(screen==play) {
+        O2 -= o2DecreaseRate * deltaTime;
+    }
     // Check if O2 is less than or equal to 0
     if (O2 <= 0.0f) {
         // Handle game over condition
         screen = over;
+        endTime=totalTime;
     }
 
 
@@ -582,6 +586,10 @@ void Engine::update() {
             //removing a treasure adds a point
             points++;
 
+            if(numTreasure==0){
+                screen = over;
+                endTime = totalTime;
+            }
             break;
         }
     }
@@ -596,6 +604,10 @@ void Engine::render() {
 
     // Render differently depending on screen
     switch (screen) {
+        /*case test:{
+            testRect->setUniforms();
+            testRect->draw();
+        }*/
         case start: {
             //declaring strings to be displayed
             string startLabel = "Welcome to ScubaDiver";
@@ -611,7 +623,7 @@ void Engine::render() {
             //drawing text
             this->fontRenderer->renderText(startLabel, 290,340, .5, vec3{1, 1, 1});
             this->fontRenderer->renderText(playLabel,368,292,.7, vec3{0, 0, 0});
-            this->fontRenderer->renderText(quitLabel,368,232,.7, vec3{0, 0, 0});
+            this->fontRenderer->renderText(quitLabel,368,225,.7, vec3{0, 0, 0});
 
             break;
         }
@@ -619,17 +631,25 @@ void Engine::render() {
         case play: {
 
             // Draw the map
-            for (int y = 0; y < gameDimensions; ++y) {
+            /*for (int y = 0; y < gameDimensions; ++y) {
                 for (int x = 0; x < gameDimensions; ++x) {
 
 
-                    color fill = map[y][x].isWall() ? black: gray;
-                    map[y][x].setColor(fill);
-
-                    map[y][x].setUniforms();
-                    map[y][x].draw();
 
                 }
+            }*/
+            background->setUniforms();
+            background->draw();
+
+            for(int i=0;i<wallPositions.size();i++){
+
+                int wallX = wallPositions[i].first;
+                int wallY = wallPositions[i].second;
+                color fill = map[wallY][wallX].isWall() ? black: gray;
+
+                map[wallY][wallX].setColor(fill);
+                map[wallY][wallX].setUniforms();
+                map[wallY][wallX].draw();
             }
 
             //draw treasure
@@ -678,7 +698,33 @@ void Engine::render() {
 
         case over: {
             //TODO: CREATE END GAME MENU
-            string message = "You win!";
+            string message = "Game Over";
+            this->fontRenderer->renderText(message,350,340, .7, vec3{1, 1, 1});
+
+            // Convert totalTime to minutes and seconds
+            int minutes = static_cast<int>(endTime) / 60;
+            int seconds = static_cast<int>(endTime) % 60;
+
+            string pointsLabel = "Points: " + std::to_string(points);
+
+            // Ensure O2 is not less than 0
+            O2 = std::max(O2, 0.0f);
+
+            // Calculate the percentage of O2 relative to totalO2
+            float o2Percentage = (O2 / startO2) * 100.0f;
+
+            // Convert o2Percentage to a string with 1 decimal point and concatenate with the label
+            std::ostringstream o2Stream;
+            o2Stream << std::fixed << std::setprecision(1) << o2Percentage;
+            string o2Label = "O2: " + o2Stream.str() + "%";
+
+            string timeLabel = "Time: " + std::to_string(minutes) + "m " + std::to_string(seconds) + "s";
+
+            this->fontRenderer->renderText(pointsLabel, 350,320, .35, vec3{1, 1, 1});
+            this->fontRenderer->renderText(o2Label,350,300,.35, vec3{1, 1, 1});
+            this->fontRenderer->renderText(timeLabel,350,280,.35, vec3{1, 1, 1});
+
+
             break;
         }
     }

@@ -64,9 +64,16 @@ private:
     unique_ptr<Shape> player;
     std::vector<std::unique_ptr<Rect>> treasure;
     unique_ptr<Shape> gameMenu;
+    unique_ptr<Rect> background;
+    bool pix2Rect(int x, int y);
+
+    bool ifValidMove(int dir,bool speed);
 
 
 
+        unique_ptr<Rect> testRect;
+
+    std::vector<std::pair<int, int>> wallPositions;
 
 
     // Shaders
@@ -89,19 +96,22 @@ private:
     //game fields
     int points=0;
     float totalTime = 0.0f;
-    float startO2 = 70.0;
-    float O2 = 70.0;
+    float endTime;
+    float startO2 =100.0;
+    float O2 = 100.0;
 
     // Function to generate the maze
     void caveGeneration();
     void smoothMap();
     int getSurroundingWallCount(int wallX, int wallY);
+    //bool collidesWithWalls(int gridX, int gridY, float width, float height);
 
 
 
 
 
-public:
+
+        public:
     /// @brief Constructor for the Engine class.
     /// @details Initializes window and shaders.
     Engine();

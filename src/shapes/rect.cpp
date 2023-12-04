@@ -58,3 +58,15 @@ void Rect::setWall(bool state){
 bool Rect::isWall(){
     return state;
 }
+
+bool Rect::isOverlapping(const Rect &r1, const Rect &r2) {
+    // TODO: Implement this method
+    // There are only two cases when rectangles are *not* overlapping:
+    //    1. when one is to the left of the other
+    bool notLeft = r1.getRight() < r2.getLeft() || r2.getRight() < r1.getLeft();
+
+    //    2. when one is above the other
+    bool notAbove = r1.getTop() < r2.getBottom() || r2.getTop() < r1.getBottom();
+
+    return !(notLeft || notAbove);
+}
