@@ -37,67 +37,32 @@ bool Engine::ifValidMove(int dir, bool speed){
 
 
     if(dir==1) {
-        cout<<pix2Rect(playerX, playerY + (speedOut))<<endl;
-
-        cout<<playerX<<" "<<playerY<<endl;
+        playerY = playerY + rectDimen/2;
         if (pix2Rect(playerX, playerY + (speedOut))) {
-            //cout<<pix2Rect(playerX, playerY + (speedOut * 2))<<endl;
 
             return false;
         }
     }
     if(dir==-1) {
+        playerY = playerY - rectDimen/2;
         if (pix2Rect(playerX, playerY - (speedOut))) {
             return false;
         }
     }
     if(dir==2) {
+        playerX = playerX + rectDimen/2;
         if (pix2Rect(playerX + (speedOut), playerY )) {
             return false;
         }
     }
     if(dir==-2) {
+        playerX = playerX - rectDimen/2;
         if (pix2Rect(playerX - (speedOut), playerY )) {
             return false;
         }
     }
     return true;
 
-/*        bool wallState = pix2Rect(playerX,playerY+speedOut).isWall();
-        playerY + 1.0f;
-        playerX + speedOut ;
-        if(){
-            cout<<"Y: "<<playerMoveY<<" X: "<<playerMoveX<<endl;
-            return false;
-        }else{
-            return true;
-        }
-
-    }
-    if(dir==-1){
-        playerMoveY - speedOut;
-        if(map[playerMoveY][playerMoveX].isWall()){
-            return false;
-        }else{
-            return true;
-        }
-    }
-    if(dir==2){
-        playerMoveX + speedOut;
-        if(map[playerMoveY][playerMoveX].isWall()){
-            return false;
-        }else{
-            return true;
-        }
-    }
-    if(dir==-2){
-        playerMoveX - speedOut;
-        if(map[playerMoveY][playerMoveX].isWall()){
-            return false;
-        }else{
-            return true;
-        }
-    }*/
 }
 
 int Engine::getSurroundingWallCount(int wallX, int wallY) {
@@ -259,18 +224,6 @@ unsigned int Engine::initWindow(bool debug) {
 #endif
     glfwWindowHint(GLFW_RESIZABLE, false);
 
-    /*
-    attempting to resize screen to display size, creates many coordinate problems
-
-    // Get the video mode
-    const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-
-    // Set window size to the size of the monitor
-     width= mode->width;
-     height = mode->height;
-     height *= .91;
-    */
-
     // Create the window
     window = glfwCreateWindow(width, height, "ScubaDiver", nullptr, nullptr);
     if (!window) {
@@ -362,11 +315,6 @@ void Engine::initShapes() {
 
     gameMenu = make_unique<Rect>(shapeShader, menuPos, menuSize, color{1, 1, 1, .95});
 
-
-    //testing screen
-    //testRect = make_unique<Rect>(shapeShader,vec2{width/2,height/2}, vec2{rectDimen, rectDimen}, color{0, 1, 1, 1});
-
-
 }
 
 void Engine::processInput() {
@@ -417,44 +365,12 @@ void Engine::processInput() {
     }
     if (screen == play) {
 
-
-
         vec2 position = player->getPos();
         vec2 newPosition =  player->getPos();;
 
         float buttonWidth = player->getSize().x;
         float buttonHeight = player->getSize().y;
-/*
-        // Check if the point is within the bounding box of the shape
-        float left = getLeft();
-        float right = getRight();
-        float top = getTop();
-        float bottom = getBottom();
 
-        // Check if the point's coordinates are within the bounding box
-        if (point.x >= left && point.x <= right && point.y >= bottom && point.y <= top) {
-            return true; // The point is within the bounding box
-        }
-
-
-        return false; // The point is outside the bounding box
-        */
-/*
- * if you would be overlapping you cannot move in that direction
- *
-        if(!map[newPosition.y+2.0f][newPosition.x+2.0f].isWall()){
-            newPosition.y += 2.0f;
-        }*/
-/*
-    for (const unique_ptr<Rect>& r : buildings1) {
-        if (r->isOverlapping(*user)) {
-            r->setColor(orange);
-        } else {
-            r->setColor(brickRed);
-        }
-    }
-*/
-//get x,y of user ->
         //pressing the shift button doubles speed
         if (keys[GLFW_KEY_UP] && newPosition.y + buttonHeight / 2.0f + 1.0f <= height) {
             if (keys[GLFW_KEY_LEFT_SHIFT]){
@@ -553,9 +469,11 @@ void Engine::update() {
         O2 -= o2DecreaseRate * deltaTime;
     }
     // Check if O2 is less than or equal to 0
-    if (O2 <= 0.0f) {
+    if (O2 <= 0.0f && screen != over) {
         // Handle game over condition
         screen = over;
+
+
         endTime=totalTime;
     }
 
@@ -564,6 +482,10 @@ void Engine::update() {
 
     // Assuming playerRadius and treasureRadius are defined appropriately
     float playerRadius = player->getSize().x / 2.0f;
+    if(treasure.size() ==0 ){
+        screen=over;
+        return;
+    }
     float treasureRadius = treasure[0]->getSize().x / 2.0f;
 
     // Assuming there is a loop to iterate through treasure objects
@@ -586,12 +508,13 @@ void Engine::update() {
             //removing a treasure adds a point
             points++;
 
-            if(numTreasure==0){
-                screen = over;
-                endTime = totalTime;
-            }
+
             break;
         }
+    }
+    if(treasure.size() == 0 && screen != over){
+        screen = over;
+        endTime = totalTime;
     }
 }
 

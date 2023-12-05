@@ -69,10 +69,6 @@ private:
 
     bool ifValidMove(int dir,bool speed);
 
-
-
-        unique_ptr<Rect> testRect;
-
     std::vector<std::pair<int, int>> wallPositions;
 
 
@@ -90,25 +86,21 @@ private:
     vec2 playerStart;
 
     //treasure related members
-    int numTreasure = 10;
+    int numTreasure = 1;
     std::vector<vec2> treasurePos;
 
     //game fields
-    int points=0;
+    int points = 0;
     float totalTime = 0.0f;
     float endTime;
-    float startO2 =100.0;
-    float O2 = 100.0;
+    float startO2 = 1.0;
+    float O2 = startO2;
 
     // Function to generate the maze
     void caveGeneration();
     void smoothMap();
     int getSurroundingWallCount(int wallX, int wallY);
     //bool collidesWithWalls(int gridX, int gridY, float width, float height);
-
-
-
-
 
 
         public:
@@ -130,8 +122,6 @@ private:
     /// @brief Initializes the shapes to be rendered.
     void initShapes();
 
-    /// @brief Pushes back a new colored rectangle to the confetti vector.
-    void spawnConfetti();
 
     /// @brief Processes input from the user.
     /// @details (e.g. keyboard input, mouse input, etc.)
@@ -167,8 +157,7 @@ private:
     /// @note We don't have to change this matrix since the screen size never changes.
     mat4 PROJECTION = ortho(0.0f, static_cast<float>(width), 0.0f, static_cast<float>(height), -1.0f, 1.0f);
 
-    //creating parallel array to represent if a rect is on or off
-    bool rectStatus[25];
+
 
 };
 

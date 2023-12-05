@@ -70,3 +70,4 @@ bool Rect::isOverlapping(const Rect &r1, const Rect &r2) {
 
     return !(notLeft || notAbove);
 }
+
