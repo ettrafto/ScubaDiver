@@ -2,11 +2,8 @@
 #include <iomanip>
 #include "engine.h"
 
-enum state {start,test,gameMenu,pause, play, over};
+enum state {start, test, play, over};
 state screen;
-
-// Colors
-color originalFill, outlineFill, pressFill;
 
 Engine::Engine() : keys() {
 
@@ -150,7 +147,7 @@ void Engine::caveGeneration() {
 
             double randomValue = dis(gen);
 
-            int noisePercent = 47;
+            int noisePercent = 48;
 
             if (randomValue < noisePercent / 100.0) {
                 // Set as wall
@@ -479,7 +476,7 @@ void Engine::update() {
         o2DecreaseRate = 0.1f;
     } else if (movementSpeed == 2.0f) {
         // If moving at a speed of 2.0f
-        o2DecreaseRate = 0.3f;
+        o2DecreaseRate = 0.4f;
     }
 
     // Decrease O2 based on the defined rate
@@ -563,9 +560,9 @@ void Engine::render() {
             quitButton->draw();
 
             //drawing text
-            this->fontRenderer->renderText(startLabel, 290,340, .5, vec3{1, 1, 1});
-            this->fontRenderer->renderText(playLabel,368,292,.7, vec3{0, 0, 0});
-            this->fontRenderer->renderText(quitLabel,368,225,.7, vec3{0, 0, 0});
+            this->fontRenderer->renderText(startLabel, 160,400, 1, vec3{1, 1, 1});
+            this->fontRenderer->renderText(playLabel,368,292,.7, vec3{1, 1, 1});
+            this->fontRenderer->renderText(quitLabel,368,225,.7, vec3{1, 1, 1});
 
             break;
         }
@@ -608,8 +605,8 @@ void Engine::render() {
 
 
             //drawing menu
-            gameMenu->setUniforms();
-            gameMenu->draw();
+            //gameMenu->setUniforms();
+            //gameMenu->draw();
 
             // Convert totalTime to minutes and seconds
             int minutes = static_cast<int>(totalTime) / 60;
@@ -630,20 +627,18 @@ void Engine::render() {
 
             string timeLabel = "Time: " + std::to_string(minutes) + "m " + std::to_string(seconds) + "s";
 
-            this->fontRenderer->renderText(pointsLabel, 690,585, .35, vec3{0, 0, 0});
-            this->fontRenderer->renderText(o2Label,690,570,.35, vec3{0, 0, 0});
-            this->fontRenderer->renderText(timeLabel,690,555,.35, vec3{0, 0, 0});
+            this->fontRenderer->renderText(pointsLabel, 690,585, .35, vec3{1, 1, 1});
+            this->fontRenderer->renderText(o2Label,690,570,.35, vec3{1, 1, 1});
+            this->fontRenderer->renderText(timeLabel,690,555,.35, vec3{1, 1, 1});
 
 
             break;
         }
 
         case over: {
-            //shapeShader.use();
-            //shapeShader.setBool("applyEffect", false);
-            //TODO: CREATE END GAME MENU
+
             string message = "Game Over";
-            this->fontRenderer->renderText(message,350,340, .7, vec3{1, 1, 1});
+            this->fontRenderer->renderText(message,300,400, 1, vec3{1, 1, 1});
 
             // Convert totalTime to minutes and seconds
             int minutes = static_cast<int>(endTime) / 60;
@@ -668,7 +663,17 @@ void Engine::render() {
             this->fontRenderer->renderText(o2Label,350,300,.35, vec3{1, 1, 1});
             this->fontRenderer->renderText(timeLabel,350,280,.35, vec3{1, 1, 1});
 
+            /*string playLabel = "Play";
+            string quitLabel = "Quit";
 
+            startButton->setUniforms();
+            startButton->draw();
+            quitButton->setUniforms();
+            quitButton->draw();
+
+            this->fontRenderer->renderText(playLabel,368,292,.7, vec3{1, 1, 1});
+            this->fontRenderer->renderText(quitLabel,368,225,.7, vec3{1, 1, 1});
+*/
             break;
         }
     }

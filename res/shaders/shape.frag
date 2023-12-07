@@ -8,6 +8,7 @@ uniform bool applyEffect;
 
 void main()
 {
+
     // Hardcoded resolution
     vec2 resolution = vec2(2000.0, 2000.0);
 

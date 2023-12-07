@@ -90,14 +90,14 @@ private:
     vec2 playerStart;
 
     //treasure related members
-    int numTreasure = 1;
+    int numTreasure = 15;
     std::vector<vec2> treasurePos;
 
     //game fields
     int points = 0;
     float totalTime = 0.0f;
     float endTime;
-    float startO2 = 100.0;
+    float startO2 = 30.0;
     float O2 = startO2;
 
     // Function to generate the maze
