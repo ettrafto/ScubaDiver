@@ -87,7 +87,9 @@ class Shader {
         /// @param useShader boolean to indicate whether to use this shader
         void setMatrix4(const char *name, const glm::mat4 &matrix) const;
 
-    private:
+    void setBool(const char *string, bool b);
+
+private:
         /// @brief Checks if compilation or linking failed and if so, print the error logs
         /// @param object the shader object to check
         /// @param type the type of shader object (vertex, fragment, geometry)

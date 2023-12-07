@@ -17,11 +17,21 @@ Engine::Engine() : keys() {
 
 Engine::~Engine() {}
 
-bool Engine::pix2Rect(int x, int y) {
-    int newX = x/rectDimen;
-    int newY = y/rectDimen;
+bool Engine::pix2Rect(float x, float y) {
+    float newX = x/rectDimen;
+    float newY = y/rectDimen;
+
+    /*
+    float rectTop = rRect.getTop();
+    float rectBottom = rRect.getBottom();
+    float rectRight = rRect.getRight();
+    float rectLeft = rRect.getTop();*/
+
+    //
+    //return
 
     return map[newY][newX].isWall();
+
 }
 bool Engine::ifValidMove(int dir, bool speed){
 
@@ -38,6 +48,7 @@ bool Engine::ifValidMove(int dir, bool speed){
 
     if(dir==1) {
         playerY = playerY + rectDimen/2;
+        //pass get topleft and topright
         if (pix2Rect(playerX, playerY + (speedOut))) {
 
             return false;
@@ -267,6 +278,7 @@ void Engine::initShaders() {
     // Set uniforms
     textShader.use().setVector2f("vertex", vec4(100, 100, .5, .5));
     shapeShader.use().setMatrix4("projection", this->PROJECTION);
+
 }
 
 void Engine::initShapes() {
@@ -448,6 +460,12 @@ void Engine::update() {
     if(screen==play) {
         totalTime += deltaTime;
     }
+
+    if(screen==(play)){
+        vec2 playerPos = player->getPos();
+        shapeShader.use().setVector2f("playerPos",vec2(playerPos));
+    }
+
     // Get the player's movement speed
     float movementSpeed = keys[GLFW_KEY_LEFT_SHIFT] ? 2.0f : 1.0f;
 
@@ -516,6 +534,7 @@ void Engine::update() {
         screen = over;
         endTime = totalTime;
     }
+
 }
 
 void Engine::render() {
@@ -620,6 +639,8 @@ void Engine::render() {
         }
 
         case over: {
+            //shapeShader.use();
+            //shapeShader.setBool("applyEffect", false);
             //TODO: CREATE END GAME MENU
             string message = "Game Over";
             this->fontRenderer->renderText(message,350,340, .7, vec3{1, 1, 1});

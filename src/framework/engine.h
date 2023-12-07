@@ -65,12 +65,16 @@ private:
     std::vector<std::unique_ptr<Rect>> treasure;
     unique_ptr<Shape> gameMenu;
     unique_ptr<Rect> background;
-    bool pix2Rect(int x, int y);
+    bool pix2Rect(float x, float y);
 
     bool ifValidMove(int dir,bool speed);
 
     std::vector<std::pair<int, int>> wallPositions;
 
+    float rectTop;
+    float rectBottom;
+    float rectRight;
+    float rectLeft;
 
     // Shaders
     Shader shapeShader;
@@ -93,7 +97,7 @@ private:
     int points = 0;
     float totalTime = 0.0f;
     float endTime;
-    float startO2 = 1.0;
+    float startO2 = 100.0;
     float O2 = startO2;
 
     // Function to generate the maze
